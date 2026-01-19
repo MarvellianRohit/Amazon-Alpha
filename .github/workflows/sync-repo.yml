@@ -1,0 +1,49 @@
+name: Sync to Student Repo
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'apps/web/src/app/student/**'
+      - 'apps/web/src/lib/student-utils.ts'
+
+jobs:
+  sync-folder:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Checkout destination
+        uses: actions/checkout@v4
+        with:
+          repository: 'amazon-alpha/student-resources' # Example public repo
+          token: ${{ secrets.STUDENT_REPO_PAT }}
+          path: 'student-repo'
+
+      - name: Sync Files
+        run: |
+          # Ensure destination dir exists
+          mkdir -p student-repo/resources
+          
+          # Sync Student Pages
+          rsync -av --delete --exclude='node_modules' apps/web/src/app/student/ student-repo/resources/pages/
+          
+          # Sync Utils
+          cp apps/web/src/lib/student-utils.ts student-repo/resources/
+          
+      - name: Push Changes
+        cd student-repo
+        run: |
+          git config user.name "Amazon Alpha Bot"
+          git config user.email "bot@amazon-alpha.com"
+          
+          # Check for changes
+          if [[ -n $(git status -s) ]]; then
+            git add .
+            git commit -m "feat: sync student resources from main repo [skip ci]"
+            git push origin main
+          else
+            echo "No changes to sync."
+          fi
