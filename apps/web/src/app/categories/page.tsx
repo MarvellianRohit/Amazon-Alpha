@@ -17,26 +17,29 @@ export default function CategoriesPage() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {CATEGORIES.map((cat) => (
-                        <Link key={cat.id} href={`/category/${cat.id}`} className="group">
-                            <Card className="overflow-hidden border-none shadow-lg transition-all hover:shadow-xl hover:-translate-y-1">
-                                <div className="relative h-64 w-full">
-                                    <Image
-                                        src={cat.image}
-                                        alt={cat.name}
-                                        fill
-                                        className="object-cover transition-transform duration-500 group-hover:scale-105"
-                                    />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-6">
-                                        <h2 className="text-white text-2xl font-bold mb-1">{cat.name}</h2>
-                                        <div className="flex items-center text-white/80 text-sm font-medium opacity-0 transform translate-y-2 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0">
-                                            Explore Collection <ArrowRight className="ml-2 h-4 w-4" />
+                    {CATEGORIES.map((cat) => {
+                        const slug = cat.name.toLowerCase().replace(/ & /g, '-and-').replace(/ /g, '-')
+                        return (
+                            <Link key={cat.id} href={`/category/${slug}`} className="group">
+                                <Card className="overflow-hidden border-none shadow-lg transition-all hover:shadow-xl hover:-translate-y-1">
+                                    <div className="relative h-64 w-full">
+                                        <Image
+                                            src={cat.image}
+                                            alt={cat.name}
+                                            fill
+                                            className="object-cover transition-transform duration-500 group-hover:scale-105"
+                                        />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-6">
+                                            <h2 className="text-white text-2xl font-bold mb-1">{cat.name}</h2>
+                                            <div className="flex items-center text-white/80 text-sm font-medium opacity-0 transform translate-y-2 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0">
+                                                Explore Collection <ArrowRight className="ml-2 h-4 w-4" />
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            </Card>
-                        </Link>
-                    ))}
+                                </Card>
+                            </Link>
+                        )
+                    })}
 
                     {/* Mock extra categories to fill grid */}
                     <Link href="/category/new" className="group">

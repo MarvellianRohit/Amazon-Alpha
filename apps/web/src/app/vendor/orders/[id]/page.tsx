@@ -7,9 +7,10 @@ import { ArrowLeft, Printer, Truck, CheckCircle } from "lucide-react"
 import Link from "next/link"
 import { PRODUCTS } from "@/lib/mock-data"
 
-export default function VendorOrderDetailsPage({ params }: { params: { id: string } }) {
+export default async function VendorOrderDetailsPage({ params }: { params: Promise<{ id: string }> }) {
     // Mock data for this specific view
-    const orderId = params.id || "10234"
+    const { id } = await params
+    const orderId = id || "10234"
     const items = PRODUCTS.slice(0, 2)
 
     return (

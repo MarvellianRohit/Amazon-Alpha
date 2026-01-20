@@ -8,6 +8,15 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu, Search, ShoppingCart, User, Bell, Package } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
+import { useCurrency } from "@/components/providers/currency-provider";
+import { SUPPORTED_CURRENCIES, CurrencyCode } from "@/lib/currencies";
 
 // Mock Categories for Dropdown
 const CATEGORIES = [
@@ -20,6 +29,7 @@ const CATEGORIES = [
 export function Navbar() {
     const pathname = usePathname();
     const [isSearchOpen, setIsSearchOpen] = useState(false);
+    const { currency, setCurrency } = useCurrency();
 
     return (
         <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -99,6 +109,21 @@ export function Navbar() {
 
                 {/* 3. Right Actions */}
                 <div className="flex items-center gap-2">
+                    {/* Currency Selector */}
+                    <div className="hidden md:block">
+                        <Select value={currency} onValueChange={(v) => setCurrency(v as CurrencyCode)}>
+                            <SelectTrigger className="w-[90px] h-8 border-none bg-transparent focus:ring-0 text-muted-foreground hover:text-foreground">
+                                <SelectValue placeholder="Currency" />
+                            </SelectTrigger>
+                            <SelectContent align="end">
+                                {SUPPORTED_CURRENCIES.map((c) => (
+                                    <SelectItem key={c.code} value={c.code}>
+                                        {c.code} ({c.symbol})
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
                     {/* Mobile Search Toggle */}
                     <Button
                         variant="ghost"

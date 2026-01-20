@@ -1,14 +1,28 @@
 "use client"
 
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useAuth } from "@/components/providers/auth-provider"
-import { ShoppingCart, LogOut, GraduationCap } from "lucide-react"
+import { ShoppingCart, LogOut, GraduationCap, Search } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import { useEffect, useState } from "react"
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
+import { useCurrency } from "@/components/providers/currency-provider"
+import { SUPPORTED_CURRENCIES, CurrencyCode } from "@/lib/currencies"
 
 export default function Header() {
     const { user, signOut } = useAuth()
+    const { currency, setCurrency } = useCurrency();
     const [isStudent, setIsStudent] = useState(false);
+    const [searchQuery, setSearchQuery] = useState("");
+    const router = useRouter();
 
     useEffect(() => {
         // Mock check
@@ -17,13 +31,35 @@ export default function Header() {
         }
     }, [])
 
+    const handleSearch = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (searchQuery.trim()) {
+            router.push(`/search?q=${encodeURIComponent(searchQuery)}`);
+        }
+    };
+
     return (
         <header className="sticky top-0 z-50 w-full border-b bg-white/80 backdrop-blur-md transition-all">
             <div className="container mx-auto flex items-center justify-between h-16 px-4">
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-6">
                     <Link href="/" className="text-xl font-bold">Amazon-Alpha</Link>
+
+                    {/* Search Bar */}
+                    <form onSubmit={handleSearch} className="hidden md:flex items-center w-80 lg:w-96 relative">
+                        <Input
+                            type="search"
+                            placeholder="Search products..."
+                            className="w-full pr-10"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                        />
+                        <button type="submit" className="absolute right-3 text-muted-foreground hover:text-foreground">
+                            <Search className="h-4 w-4" />
+                        </button>
+                    </form>
+
                     {isStudent && (
-                        <div className="hidden md:flex items-center gap-1 px-2 py-1 bg-amber-100 text-amber-800 text-xs font-bold rounded-full border border-amber-200">
+                        <div className="hidden lg:flex items-center gap-1 px-2 py-1 bg-amber-100 text-amber-800 text-xs font-bold rounded-full border border-amber-200">
                             <GraduationCap className="w-3 h-3" />
                             <span>Student</span>
                         </div>
@@ -41,6 +77,19 @@ export default function Header() {
                             Orders
                         </Link>
                     )}
+
+                    <Select value={currency} onValueChange={(v) => setCurrency(v as CurrencyCode)}>
+                        <SelectTrigger className="w-[80px] h-8 border-none bg-transparent focus:ring-0">
+                            <SelectValue placeholder="Currency" />
+                        </SelectTrigger>
+                        <SelectContent align="end">
+                            {SUPPORTED_CURRENCIES.map((c) => (
+                                <SelectItem key={c.code} value={c.code}>
+                                    {c.code} ({c.symbol})
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
 
                     {user ? (
                         <>

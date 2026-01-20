@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/components/providers/auth-provider";
 import QueryProvider from "@/components/providers/query-provider";
+import { CurrencyProvider } from "@/components/providers/currency-provider";
 import { Navbar } from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
 import { BottomNav } from "@/components/mobile/bottom-nav";
@@ -45,17 +46,19 @@ export default function RootLayout({
       <body className={inter.className}>
         <QueryProvider>
           <AuthProvider>
-            <Navbar />
-            <main className="min-h-screen pb-16 md:pb-0">
-              {children}
-            </main>
-            <div className="md:hidden">
-              <BottomNav />
-            </div>
-            <div className="hidden md:block">
-              <Footer />
-            </div>
-            <AIChatWidget />
+            <CurrencyProvider>
+              <Navbar />
+              <main className="min-h-screen pb-16 md:pb-0">
+                {children}
+              </main>
+              <div className="md:hidden">
+                <BottomNav />
+              </div>
+              <div className="hidden md:block">
+                <Footer />
+              </div>
+              <AIChatWidget />
+            </CurrencyProvider>
           </AuthProvider>
         </QueryProvider>
       </body>

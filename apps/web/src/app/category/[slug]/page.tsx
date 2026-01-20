@@ -1,41 +1,72 @@
 
 import Link from "next/link"
 import Image from "next/image"
+import { notFound } from "next/navigation"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { PRODUCTS } from "@/lib/mock-data"
-import { ShoppingCart, Star } from "lucide-react"
+import { PRODUCTS, CATEGORIES } from "@/lib/mock-data"
+import { ShoppingCart, Star, ArrowLeft } from "lucide-react"
 import { Price } from "@/components/ui/price"
 
-export default async function SearchPage({
-    searchParams,
-}: {
-    searchParams: Promise<{ q: string }>
-}) {
-    const { q } = await searchParams
-    const query = q || ""
-    const lowerQuery = query.toLowerCase()
+export default async function CategoryPage({ params }: { params: Promise<{ slug: string }> }) {
+    const { slug: rawSlug } = await params;
+    // Decode and normalize slug
+    const slug = decodeURIComponent(rawSlug).toLowerCase() // e.g., "home-&-smart"
 
-    const results = PRODUCTS.filter((product) =>
-        product.name.toLowerCase().includes(lowerQuery) ||
-        product.description.toLowerCase().includes(lowerQuery) ||
-        product.category.toLowerCase().includes(lowerQuery)
+    // Find category matching the slug (fuzzy match for simplicity)
+    // "Home & Smart" -> "home", "smart", "home-&-smart"
+    const category = CATEGORIES.find(c =>
+        c.name.toLowerCase().replace(/ /g, '-').replace(/&/g, 'and') === slug ||
+        c.name.toLowerCase().includes(slug.replace(/-/g, ' '))
+    )
+
+    if (!category) {
+        // Fallback: Check if any product has this category name directly
+        const hasProducts = PRODUCTS.some(p => p.category.toLowerCase().replace(/ /g, '-') === slug)
+        if (!hasProducts) return notFound()
+    }
+
+    const categoryName = category ? category.name : slug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
+
+    // Filter products
+    const categoryProducts = PRODUCTS.filter(product =>
+        product.category.toLowerCase().includes(categoryName.toLowerCase()) ||
+        categoryName.toLowerCase().includes(product.category.toLowerCase())
     )
 
     return (
-        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-12">
-            <div className="container mx-auto px-4">
-                <div className="mb-8">
-                    <h1 className="text-3xl font-bold tracking-tight mb-2">Search Results</h1>
-                    <p className="text-muted-foreground">
-                        Showing {results.length} results for <span className="font-semibold">"{query}"</span>
+        <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+            {/* Hero Section */}
+            <div className="relative h-[300px] w-full overflow-hidden">
+                <Image
+                    src={category?.image || "https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=2000&auto=format&fit=crop"}
+                    alt={categoryName}
+                    fill
+                    className="object-cover"
+                    priority
+                />
+                <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center text-center p-6">
+                    <Badge className="mb-4 bg-white/20 hover:bg-white/30 text-white border-none backdrop-blur-sm">
+                        Collection
+                    </Badge>
+                    <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">{categoryName}</h1>
+                    <p className="text-white/80 text-lg max-w-2xl">
+                        Discover our curated selection of top-tier {categoryName.toLowerCase()}.
                     </p>
                 </div>
+            </div>
 
-                {results.length > 0 ? (
+            {/* Breadcrumb / Back */}
+            <div className="container mx-auto px-4 py-8">
+                <Link href="/categories" className="inline-flex items-center text-muted-foreground hover:text-foreground mb-6 transition-colors">
+                    <ArrowLeft className="w-4 h-4 mr-2" /> Back to Categories
+                </Link>
+
+                {/* Product Grid */}
+                {categoryProducts.length > 0 ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                        {results.map((product) => (
+                        {categoryProducts.map((product) => (
                             <Card key={product.id} className="group overflow-hidden border-none shadow-sm hover:shadow-xl transition-all duration-300">
                                 <Link href={`/product/${product.id}`}>
                                     <div className="relative aspect-square bg-white">
@@ -86,40 +117,14 @@ export default async function SearchPage({
                         ))}
                     </div>
                 ) : (
-                    <div className="flex flex-col items-center justify-center py-20 text-center">
-                        <div className="bg-slate-100 dark:bg-slate-900 p-6 rounded-full mb-4">
-                            <SearchIcon className="w-10 h-10 text-muted-foreground" />
-                        </div>
-                        <h2 className="text-xl font-semibold mb-2">No results found</h2>
-                        <p className="text-muted-foreground max-w-sm mb-6">
-                            We couldn't find any products matching "{query}". Try checking for typos or using different keywords.
+                    <div className="text-center py-20">
+                        <h2 className="text-xl font-semibold mb-2">No products found</h2>
+                        <p className="text-muted-foreground">
+                            We currently don't have any matching products in this category. Check back soon!
                         </p>
-                        <Link href="/">
-                            <Button>Go back home</Button>
-                        </Link>
                     </div>
                 )}
             </div>
         </div>
-    )
-}
-
-function SearchIcon(props: React.SVGProps<SVGSVGElement>) {
-    return (
-        <svg
-            {...props}
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-        >
-            <circle cx="11" cy="11" r="8" />
-            <path d="m21 21-4.3-4.3" />
-        </svg>
     )
 }

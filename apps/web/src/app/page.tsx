@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { Search, ShoppingCart, User, Menu, Star, Sparkles, TrendingUp } from "lucide-react"
 import { CATEGORIES, PRODUCTS } from "@/lib/mock-data"
+import { Price } from "@/components/ui/price"
 
 export default function Home() {
   return (
@@ -129,9 +130,13 @@ export default function Home() {
                     <h3 className="font-semibold text-lg line-clamp-2 mb-2 h-14">{product.name}</h3>
                     <div className="flex items-center justify-between mt-4">
                       <div className="flex flex-col">
-                        <span className="text-xl font-bold">${product.price}</span>
+                        <div className="text-xl font-bold">
+                          <Price amount={product.price} />
+                        </div>
                         {product.originalPrice && (
-                          <span className="text-sm text-muted-foreground line-through">${product.originalPrice}</span>
+                          <div className="text-sm text-muted-foreground line-through">
+                            <Price amount={product.originalPrice} />
+                          </div>
                         )}
                       </div>
                       <Button size="sm">Add</Button>

@@ -7,6 +7,7 @@ import { Separator } from "@/components/ui/separator"
 import { Input } from "@/components/ui/input"
 import { CART_ITEMS } from "@/lib/mock-data"
 import { Trash2, Plus, Minus, ArrowRight, ShieldCheck } from "lucide-react"
+import { Price } from "@/components/ui/price"
 
 export default function CartPage() {
     const subtotal = CART_ITEMS.reduce((sum, item) => sum + (item.product.price * item.quantity), 0)
@@ -40,7 +41,7 @@ export default function CartPage() {
                                                     </div>
                                                 )}
                                             </div>
-                                            <p className="font-bold text-lg">${item.product.price}</p>
+                                            <div className="font-bold text-lg"><Price amount={item.product.price} /></div>
                                         </div>
                                         <div className="flex items-center justify-between mt-4">
                                             <div className="flex items-center space-x-2">
@@ -70,7 +71,7 @@ export default function CartPage() {
                                 <div className="space-y-2 text-sm">
                                     <div className="flex justify-between">
                                         <span>Subtotal</span>
-                                        <span>${subtotal.toFixed(2)}</span>
+                                        <Price amount={subtotal} />
                                     </div>
                                     <div className="flex justify-between text-muted-foreground">
                                         <span>Shipping & Handling</span>
@@ -78,12 +79,12 @@ export default function CartPage() {
                                     </div>
                                     <div className="flex justify-between text-muted-foreground">
                                         <span>Tax (8%)</span>
-                                        <span>${tax.toFixed(2)}</span>
+                                        <Price amount={tax} />
                                     </div>
                                     <Separator className="my-2" />
                                     <div className="flex justify-between text-lg font-bold">
                                         <span>Total</span>
-                                        <span>${total.toFixed(2)}</span>
+                                        <Price amount={total} />
                                     </div>
                                 </div>
 

@@ -9,6 +9,7 @@ import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Star, Truck, ShieldCheck, Heart, Share2, ArrowLeft, Search, ShoppingCart, User, Menu } from "lucide-react"
 import { PRODUCTS } from "@/lib/mock-data"
+import { Price } from "@/components/ui/price"
 
 // This is a dynamic route component
 export default async function ProductPage({ params }: { params: { id: string } }) {
@@ -113,9 +114,11 @@ export default async function ProductPage({ params }: { params: { id: string } }
                         <Separator />
 
                         <div className="flex items-baseline space-x-2">
-                            <span className="text-4xl font-bold">${product.price}</span>
+                            <div className="text-4xl font-bold"><Price amount={product.price} /></div>
                             {product.originalPrice && (
-                                <span className="text-lg text-muted-foreground line-through">${product.originalPrice}</span>
+                                <div className="text-lg text-muted-foreground line-through">
+                                    <Price amount={product.originalPrice} />
+                                </div>
                             )}
                         </div>
 
