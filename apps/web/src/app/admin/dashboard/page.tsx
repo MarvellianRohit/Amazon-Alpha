@@ -1,114 +1,126 @@
-'use client';
 
-import { StatCard } from "@/components/vendor/stat-card";
-import { VendorRow } from "@/components/admin/vendor-row";
-import { CommissionTracker } from "@/components/admin/commission-tracker";
-import { SystemHealthChart } from "@/components/admin/system-health-chart";
-import { VendorApprovalTable } from "@/components/admin/vendor-approval-table";
-import { DeveloperSync } from "@/components/admin/developer-sync";
-import { Users, Store, AlertTriangle, ShieldAlert, CheckCircle2 } from "lucide-react";
-import {
-    Table,
-    TableBody,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Vendor } from "@/types";
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Activity, CreditCard, DollarSign, Users, AlertCircle, Check, X, Shield } from "lucide-react"
 
-// Mock Data
-const MOCK_VENDORS: Vendor[] = [
-    {
-        id: '1',
-        name: 'TechGiant Inc.',
-        email: 'contact@techgiant.com',
-        vacationMode: false,
-        isSuspended: false,
-        createdAt: '2023-01-15T10:00:00Z'
-    },
-    {
-        id: '2',
-        name: 'FastFashion Co.',
-        email: 'sales@fastfashion.com',
-        vacationMode: true,
-        isSuspended: false,
-        createdAt: '2023-03-22T14:30:00Z'
-    },
-    {
-        id: '3',
-        name: 'Scammy Seller',
-        email: 'fake@scam.com',
-        vacationMode: false,
-        isSuspended: true,
-        createdAt: '2023-11-05T09:15:00Z'
-    }
-];
-
-export default function AdminDashboardPage() {
+export default function AdminDashboard() {
     return (
-        <div className="flex-1 space-y-8 p-8 pt-6">
-            <div className="flex items-center justify-between space-y-2">
-                <h2 className="text-3xl font-bold tracking-tight text-red-600 flex items-center gap-2">
-                    <ShieldAlert className="h-8 w-8" />
-                    God Mode Admin
-                </h2>
-            </div>
+        <div className="min-h-screen bg-slate-950 text-slate-50 p-8">
+            <div className="container mx-auto max-w-6xl space-y-8">
+                <div className="flex justify-between items-center">
+                    <div>
+                        <h1 className="text-3xl font-bold tracking-tight flex items-center">
+                            <Shield className="mr-3 h-8 w-8 text-red-500" /> Admin "God Mode"
+                        </h1>
+                        <p className="text-slate-400">Platform overview and compliance management.</p>
+                    </div>
+                    <div className="flex space-x-2">
+                        <Button variant="destructive">System Lockdown</Button>
+                    </div>
+                </div>
 
-            <div className="mb-6">
-                <DeveloperSync />
-            </div>
+                {/* Global Stats */}
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                    <Card className="bg-slate-900 border-slate-800">
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium text-slate-200">Total Volume</CardTitle>
+                            <DollarSign className="h-4 w-4 text-slate-400" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold text-white">$1,234,567</div>
+                            <p className="text-xs text-slate-400">+12% from last month</p>
+                        </CardContent>
+                    </Card>
+                    <Card className="bg-slate-900 border-slate-800">
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium text-slate-200">Pending Vendors</CardTitle>
+                            <Users className="h-4 w-4 text-slate-400" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold text-white">12</div>
+                            <p className="text-xs text-slate-400">Requires Review</p>
+                        </CardContent>
+                    </Card>
+                    <Card className="bg-slate-900 border-slate-800">
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium text-slate-200">Disputes</CardTitle>
+                            <AlertCircle className="h-4 w-4 text-red-500" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold text-white">3</div>
+                            <p className="text-xs text-slate-400">Active escalations</p>
+                        </CardContent>
+                    </Card>
+                    <Card className="bg-slate-900 border-slate-800">
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium text-slate-200">System Health</CardTitle>
+                            <Activity className="h-4 w-4 text-green-500" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold text-green-500">99.9%</div>
+                            <p className="text-xs text-slate-400">All systems operational</p>
+                        </CardContent>
+                    </Card>
+                </div>
 
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                <CommissionTracker />
-                <SystemHealthChart />
-                <StatCard
-                    title="Suspicious Orders"
-                    value="3"
-                    description="Flagged by AI"
-                    icon={AlertTriangle}
-                    trend={{ value: 2, isPositive: false }}
-                />
-            </div>
-
-            <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-2">
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="text-base flex items-center gap-2">
-                            <CheckCircle2 className="w-5 h-5 text-blue-500" />
-                            Vendor Approval Queue
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <VendorApprovalTable />
-                    </CardContent>
-                </Card>
-
-                <Card className="border-red-200">
-                    <CardHeader>
-                        <CardTitle className="text-red-700 text-base flex items-center gap-2">
-                            <ShieldAlert className="w-5 h-5" />
-                            Compliance & Kill Switch
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>Vendor Name</TableHead>
-                                    <TableHead>Status</TableHead>
-                                    <TableHead className="text-right">Action</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {MOCK_VENDORS.map((vendor) => (
-                                    <VendorRow key={vendor.id} vendor={vendor} />
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                    {/* Vendor Approvals */}
+                    <Card className="col-span-2 bg-slate-900 border-slate-800">
+                        <CardHeader>
+                            <CardTitle className="text-white">Vendor Approval Queue</CardTitle>
+                            <CardDescription className="text-slate-400">Review new seller applications.</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="space-y-4">
+                                {[1, 2, 3].map((i) => (
+                                    <div key={i} className="flex items-center justify-between border-b border-slate-800 pb-4 last:border-0">
+                                        <div>
+                                            <p className="font-medium text-white">TechInnovators Ltd.</p>
+                                            <p className="text-sm text-slate-400">Electronics • Applied 2 days ago</p>
+                                            <div className="flex gap-2 mt-1">
+                                                <Badge variant="outline" className="text-xs border-slate-700 text-slate-300">ID Verified</Badge>
+                                                <Badge variant="outline" className="text-xs border-slate-700 text-slate-300">Bank Linked</Badge>
+                                            </div>
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <Button size="sm" className="bg-green-600 hover:bg-green-700">Approve</Button>
+                                            <Button size="sm" variant="outline" className="text-red-400 border-red-900 hover:bg-red-950">Deny</Button>
+                                        </div>
+                                    </div>
                                 ))}
-                            </TableBody>
-                        </Table>
-                    </CardContent>
-                </Card>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    {/* System Activity */}
+                    <Card className="bg-slate-900 border-slate-800">
+                        <CardHeader>
+                            <CardTitle className="text-white">Live Activity</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="space-y-4 relative pl-4 border-l border-slate-800">
+                                <div className="relative">
+                                    <div className="absolute -left-[21px] top-1 h-3 w-3 rounded-full bg-blue-500 ring-4 ring-slate-900"></div>
+                                    <p className="text-sm text-slate-200">New order #9923 placed</p>
+                                    <p className="text-xs text-slate-500">2 mins ago</p>
+                                </div>
+                                <div className="relative">
+                                    <div className="absolute -left-[21px] top-1 h-3 w-3 rounded-full bg-green-500 ring-4 ring-slate-900"></div>
+                                    <p className="text-sm text-slate-200">Vendor "Nike Official" payout processed</p>
+                                    <p className="text-xs text-slate-500">15 mins ago</p>
+                                </div>
+                                <div className="relative">
+                                    <div className="absolute -left-[21px] top-1 h-3 w-3 rounded-full bg-yellow-500 ring-4 ring-slate-900"></div>
+                                    <p className="text-sm text-slate-200">High traffic alert: Shoes Category</p>
+                                    <p className="text-xs text-slate-500">1 hour ago</p>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
+
             </div>
         </div>
-    );
+    )
 }

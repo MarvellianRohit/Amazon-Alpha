@@ -1,6 +1,7 @@
 from fastapi import Depends, HTTPException, status
 from app.api.deps import get_current_user
-from supabase.gotrue.types import User
+from typing import Any
+User = Any
 
 def require_vendor_role(user: User = Depends(get_current_user)) -> User:
     """

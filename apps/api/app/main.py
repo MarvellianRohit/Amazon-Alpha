@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api.v1.endpoints import products, vendors, auth, students
+# from app.api.v1.endpoints import products, vendors, auth, students
 # Note: In a real migration, we would move existing routers to app/api/v1/endpoints/
 # For now, we assume these modules are being created or we import from existing locations and re-alias
 

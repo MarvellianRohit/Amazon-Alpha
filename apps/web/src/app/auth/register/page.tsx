@@ -1,188 +1,63 @@
-"use client"
 
-import { useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
-import { useRouter } from 'next/navigation'
-import Link from 'next/link'
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { registerSchema, type RegisterInput } from "@/lib/validators/auth"
-
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
-import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from "@/components/ui/form"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Github } from "lucide-react"
 
 export default function RegisterPage() {
-    const [authError, setAuthError] = useState<string | null>(null)
-    const [isLoading, setIsLoading] = useState(false)
-    const router = useRouter()
-    const supabase = createClient()
-
-    const form = useForm<RegisterInput>({
-        resolver: zodResolver(registerSchema),
-        defaultValues: {
-            fullName: "",
-            email: "",
-            password: "",
-            confirmPassword: "",
-            userType: "customer",
-        },
-    })
-
-    async function onSubmit(data: RegisterInput) {
-        setIsLoading(true)
-        setAuthError(null)
-
-        const { error: signUpError } = await supabase.auth.signUp({
-            email: data.email,
-            password: data.password,
-            options: {
-                data: {
-                    full_name: data.fullName,
-                    role: data.userType,
-                },
-            },
-        })
-
-        if (signUpError) {
-            setAuthError(signUpError.message)
-            setIsLoading(false)
-        } else {
-            // Success - Redirect or show confirmation
-            router.push('/auth/login?registered=true')
-        }
-    }
-
     return (
-        <div className="flex items-center justify-center min-h-screen bg-gray-50 py-10">
+        <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 p-4">
             <Card className="w-full max-w-md">
-                <CardHeader>
-                    <CardTitle className="text-2xl font-bold text-center">Create an Account</CardTitle>
-                    <CardDescription className="text-center">Join Amazon-Alpha today</CardDescription>
+                <CardHeader className="space-y-1 text-center">
+                    <CardTitle className="text-2xl font-bold">Create an account</CardTitle>
+                    <CardDescription>
+                        Enter your email below to create your account
+                    </CardDescription>
                 </CardHeader>
-                <CardContent>
-                    <Form {...form}>
-                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                            <FormField
-                                control={form.control}
-                                name="fullName"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Full Name</FormLabel>
-                                        <FormControl>
-                                            <Input placeholder="John Doe" {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-
-                            <FormField
-                                control={form.control}
-                                name="email"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Email</FormLabel>
-                                        <FormControl>
-                                            <Input placeholder="m@example.com" {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-
-                            <FormField
-                                control={form.control}
-                                name="password"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Password</FormLabel>
-                                        <FormControl>
-                                            <Input type="password" {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-
-                            <FormField
-                                control={form.control}
-                                name="confirmPassword"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Confirm Password</FormLabel>
-                                        <FormControl>
-                                            <Input type="password" {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-
-                            <FormField
-                                control={form.control}
-                                name="userType"
-                                render={({ field }) => (
-                                    <FormItem className="space-y-3">
-                                        <FormLabel>I want to...</FormLabel>
-                                        <FormControl>
-                                            <RadioGroup
-                                                onValueChange={field.onChange}
-                                                defaultValue={field.value}
-                                                className="flex flex-col space-y-1"
-                                            >
-                                                <FormItem className="flex items-center space-x-3 space-y-0">
-                                                    <FormControl>
-                                                        <RadioGroupItem value="customer" />
-                                                    </FormControl>
-                                                    <FormLabel className="font-normal">
-                                                        Buy products
-                                                    </FormLabel>
-                                                </FormItem>
-                                                <FormItem className="flex items-center space-x-3 space-y-0">
-                                                    <FormControl>
-                                                        <RadioGroupItem value="vendor" />
-                                                    </FormControl>
-                                                    <FormLabel className="font-normal">
-                                                        Sell products
-                                                    </FormLabel>
-                                                </FormItem>
-                                            </RadioGroup>
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-
-                            {authError && (
-                                <div className="p-3 bg-red-100 border border-red-200 text-red-600 rounded-md text-sm" role="alert">
-                                    {authError}
-                                </div>
-                            )}
-
-                            <Button type="submit" className="w-full" disabled={isLoading}>
-                                {isLoading ? 'Creating account...' : 'Create Account'}
-                            </Button>
-                        </form>
-                    </Form>
-                    <div className="mt-4 text-center text-sm">
-                        Already have an account?{" "}
-                        <Link href="/auth/login" className="underline">
-                            Sign in
-                        </Link>
+                <CardContent className="grid gap-4">
+                    <div className="grid grid-cols-2 gap-6">
+                        <Button variant="outline">
+                            <Github className="mr-2 h-4 w-4" />
+                            Github
+                        </Button>
+                        <Button variant="outline">
+                            <svg role="img" viewBox="0 0 24 24" className="mr-2 h-4 w-4" fill="currentColor">
+                                <path d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z" />
+                            </svg>
+                            Google
+                        </Button>
                     </div>
+                    <div className="relative">
+                        <div className="absolute inset-0 flex items-center">
+                            <span className="w-full border-t" />
+                        </div>
+                        <div className="relative flex justify-center text-xs uppercase">
+                            <span className="bg-background px-2 text-muted-foreground">
+                                Or continue with
+                            </span>
+                        </div>
+                    </div>
+                    <div className="grid gap-2">
+                        <Label htmlFor="email">Email</Label>
+                        <Input id="email" type="email" placeholder="m@example.com" />
+                    </div>
+                    <div className="grid gap-2">
+                        <Label htmlFor="password">Password</Label>
+                        <Input id="password" type="password" />
+                    </div>
+                    <div className="grid gap-2">
+                        <Label htmlFor="confirm-password">Confirm Password</Label>
+                        <Input id="confirm-password" type="password" />
+                    </div>
+                    <Button className="w-full">Create Account</Button>
                 </CardContent>
+                <CardFooter className="flex flex-col space-y-2 text-center text-sm">
+                    <Link href="/auth/login" className="text-primary hover:underline">
+                        Already have an account? Sign In
+                    </Link>
+                </CardFooter>
             </Card>
         </div>
     )

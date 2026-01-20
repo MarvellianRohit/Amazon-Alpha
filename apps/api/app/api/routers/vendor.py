@@ -4,7 +4,8 @@ from app.api.vendor_deps import require_vendor_role
 from app.api.deps import get_current_user
 from app.core.security import get_supabase
 from app.schemas.product import Product
-from supabase.gotrue.types import User
+from typing import Any
+User = Any
 
 router = APIRouter()
 

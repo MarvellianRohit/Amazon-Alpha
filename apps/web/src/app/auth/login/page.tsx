@@ -1,114 +1,62 @@
-"use client"
 
-import { useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
-import { useRouter } from 'next/navigation'
-import Link from 'next/link'
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { loginSchema, type LoginInput } from "@/lib/validators/auth"
-
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
-import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from "@/components/ui/form"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Github, Mail } from "lucide-react"
 
 export default function LoginPage() {
-    const [authError, setAuthError] = useState<string | null>(null)
-    const [isLoading, setIsLoading] = useState(false)
-    const router = useRouter()
-    const supabase = createClient()
-
-    const form = useForm<LoginInput>({
-        resolver: zodResolver(loginSchema),
-        defaultValues: {
-            email: "",
-            password: "",
-        },
-    })
-
-    async function onSubmit(data: LoginInput) {
-        setIsLoading(true)
-        setAuthError(null)
-
-        const { error } = await supabase.auth.signInWithPassword({
-            email: data.email,
-            password: data.password,
-        })
-
-        if (error) {
-            setAuthError(error.message)
-            setIsLoading(false)
-        } else {
-            router.push('/')
-            router.refresh()
-        }
-    }
-
     return (
-        <div className="flex items-center justify-center min-h-screen bg-gray-50">
+        <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 p-4">
             <Card className="w-full max-w-md">
-                <CardHeader>
-                    <CardTitle className="text-2xl font-bold text-center">Login to Amazon-Alpha</CardTitle>
-                    <CardDescription className="text-center">Enter your email to sign in to your account</CardDescription>
+                <CardHeader className="space-y-1 text-center">
+                    <CardTitle className="text-2xl font-bold">Welcome back</CardTitle>
+                    <CardDescription>
+                        Enter your email to sign in to your account
+                    </CardDescription>
                 </CardHeader>
-                <CardContent>
-                    <Form {...form}>
-                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                            <FormField
-                                control={form.control}
-                                name="email"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Email</FormLabel>
-                                        <FormControl>
-                                            <Input placeholder="m@example.com" {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="password"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Password</FormLabel>
-                                        <FormControl>
-                                            <Input type="password" {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-
-                            {authError && (
-                                <div className="p-3 bg-red-100 border border-red-200 text-red-600 rounded-md text-sm" role="alert">
-                                    {authError}
-                                </div>
-                            )}
-
-                            <Button type="submit" className="w-full" disabled={isLoading}>
-                                {isLoading ? 'Signing in...' : 'Sign In'}
-                            </Button>
-                        </form>
-                    </Form>
-
-                    <div className="mt-4 text-center text-sm">
-                        Don&apos;t have an account?{" "}
-                        <Link href="/auth/register" className="underline">
-                            Sign up
-                        </Link>
+                <CardContent className="grid gap-4">
+                    <div className="grid grid-cols-2 gap-6">
+                        <Button variant="outline">
+                            <Github className="mr-2 h-4 w-4" />
+                            Github
+                        </Button>
+                        <Button variant="outline">
+                            <svg role="img" viewBox="0 0 24 24" className="mr-2 h-4 w-4" fill="currentColor">
+                                <path d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z" />
+                            </svg>
+                            Google
+                        </Button>
                     </div>
+                    <div className="relative">
+                        <div className="absolute inset-0 flex items-center">
+                            <span className="w-full border-t" />
+                        </div>
+                        <div className="relative flex justify-center text-xs uppercase">
+                            <span className="bg-background px-2 text-muted-foreground">
+                                Or continue with
+                            </span>
+                        </div>
+                    </div>
+                    <div className="grid gap-2">
+                        <Label htmlFor="email">Email</Label>
+                        <Input id="email" type="email" placeholder="m@example.com" />
+                    </div>
+                    <div className="grid gap-2">
+                        <Label htmlFor="password">Password</Label>
+                        <Input id="password" type="password" />
+                    </div>
+                    <Button className="w-full">Sign In</Button>
                 </CardContent>
+                <CardFooter className="flex flex-col space-y-2 text-center text-sm">
+                    <Link href="/auth/register" className="text-primary hover:underline">
+                        Don't have an account? Sign up
+                    </Link>
+                    <Link href="#" className="text-muted-foreground hover:underline">
+                        Forgot your password?
+                    </Link>
+                </CardFooter>
             </Card>
         </div>
     )
