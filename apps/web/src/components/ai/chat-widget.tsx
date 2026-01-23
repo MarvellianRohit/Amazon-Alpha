@@ -38,27 +38,37 @@ export function AIChatWidget() {
     const handleSend = async () => {
         if (!input.trim() || isLoading) return;
 
-        const userMsg = input;
-        setMessages(prev => [...prev, { role: "user", content: userMsg }]);
+        const userMsg = input.toLowerCase();
+        setMessages(prev => [...prev, { role: "user", content: input }]);
         setInput("");
         setIsLoading(true);
 
-        try {
-            const res = await fetch("http://127.0.0.1:8000/api/v1/ai/ask", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ query: userMsg })
-            });
-            const data = await res.json();
+        // Simulated AI Thinking
+        setTimeout(() => {
+            let responseText = "I'm not sure about that. Try asking about electronics or my current offers!";
+            let recommendations: any[] = [];
 
-            let responseContent: React.ReactNode = data.answer;
+            if (userMsg.includes("laptop") || userMsg.includes("computer") || userMsg.includes("macbook")) {
+                responseText = "I found several high-performance laptops for you. Our latest Pro Laptops are on sale!";
+                recommendations = PRODUCTS.filter(p => p.category === "Electronics" && p.name.includes("Laptop")).slice(0, 2);
+            } else if (userMsg.includes("headphone") || userMsg.includes("audio") || userMsg.includes("music")) {
+                responseText = "Check out these premium headphones. The Alpha-Neo series offers noise cancellation.";
+                recommendations = PRODUCTS.filter(p => p.category === "Electronics" && p.name.includes("Headphone")).slice(0, 2);
+            } else if (userMsg.includes("shoe") || userMsg.includes("fashion") || userMsg.includes("wear")) {
+                responseText = "I've picked out some trending shoes from our Fashion collection.";
+                recommendations = PRODUCTS.filter(p => p.category === "Fashion" && (p.name.includes("Shoe") || p.name.includes("Kicks"))).slice(0, 2);
+            } else if (userMsg.includes("hi") || userMsg.includes("hello") || userMsg.includes("hey")) {
+                responseText = "Hello! I'm your AI shopping assistant. I can help you find products, track orders, or answer questions about our student club!";
+            } else if (userMsg.includes("discount") || userMsg.includes("offer") || userMsg.includes("sale")) {
+                responseText = "We have a 20% discount for all Student Club members. Just verify your ID!";
+            }
 
-            if (data.recommended_products && data.recommended_products.length > 0) {
-                responseContent = (
-                    <div className="flex flex-col gap-2">
-                        <p>{data.answer}</p>
+            const responseContent = (
+                <div className="flex flex-col gap-2">
+                    <p>{responseText}</p>
+                    {recommendations.length > 0 && (
                         <div className="flex flex-col gap-2 mt-1">
-                            {data.recommended_products.map((product: any) => (
+                            {recommendations.map((product) => (
                                 <div key={product.id} className="bg-slate-50 border p-2 rounded-md flex gap-2 items-center hover:bg-slate-100 transition-colors cursor-pointer group">
                                     <div className="relative w-12 h-12 bg-white rounded-md overflow-hidden flex-shrink-0">
                                         <img src={product.image} alt={product.name} className="object-cover w-full h-full" />
@@ -73,6 +83,14 @@ export function AIChatWidget() {
                                                 className="h-6 w-6"
                                                 onClick={() => {
                                                     addItem.mutate({ productId: product.id, quantity: 1 });
+                                                    import('canvas-confetti').then(confetti => {
+                                                        confetti.default({
+                                                            particleCount: 100,
+                                                            spread: 70,
+                                                            origin: { y: 0.6 },
+                                                            colors: ['#6366f1', '#a855f7', '#ec4899']
+                                                        });
+                                                    });
                                                     toast.success("Added to cart");
                                                 }}
                                             >
@@ -83,18 +101,13 @@ export function AIChatWidget() {
                                 </div>
                             ))}
                         </div>
-                    </div>
-                );
-            }
+                    )}
+                </div>
+            );
 
             setMessages(prev => [...prev, { role: "assistant", content: responseContent }]);
-
-        } catch (error) {
-            console.error("Chat Error:", error);
-            setMessages(prev => [...prev, { role: "assistant", content: "Connection Error. Ensure Backend is running on port 8000." }]);
-        } finally {
             setIsLoading(false);
-        }
+        }, 800);
     };
 
     return (

@@ -1,66 +1,28 @@
+"use client"
 
 import Link from "next/link"
-import Image from "next/image"
+import { use } from "react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Star, Truck, ShieldCheck, Heart, Share2, ArrowLeft, Search, ShoppingCart, User, Menu } from "lucide-react"
+import { Star, Truck, ShieldCheck, Heart, Share2, ArrowLeft } from "lucide-react"
 import { PRODUCTS } from "@/lib/mock-data"
 import { Price } from "@/components/ui/price"
 import { ProductGallery } from "@/components/product/product-gallery"
+import { Navbar } from "@/components/layout/navbar"
+import { useCart } from "@/hooks/use-cart"
+import { motion, AnimatePresence } from "framer-motion"
 
-// This is a dynamic route component
-export default async function ProductPage({ params }: { params: { id: string } }) {
-    // In a real app we'd await params, but for mock we just use it
-    const { id } = await params
+export default function ProductPage({ params }: { params: Promise<{ id: string }> }) {
+    const { id } = use(params)
     const product = PRODUCTS.find((p) => p.id === id) || PRODUCTS[0]
+    const { addItem } = useCart()
 
     return (
         <div className="flex min-h-screen flex-col bg-slate-50 dark:bg-slate-950">
-            {/* Reusing Header for consistency (Componentize this later) */}
-            <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-                <div className="container flex h-16 items-center mx-auto px-4">
-                    <div className="mr-8 hidden md:flex">
-                        <Link href="/" className="mr-6 flex items-center space-x-2">
-                            <span className="hidden font-bold sm:inline-block text-xl">
-                                Amazon<span className="text-primary">Alpha</span>
-                            </span>
-                        </Link>
-                        <nav className="flex items-center space-x-6 text-sm font-medium">
-                            <Link href="/products" className="transition-colors hover:text-foreground/80 text-foreground/60">Products</Link>
-                            <Link href="/categories" className="transition-colors hover:text-foreground/80 text-foreground/60">Categories</Link>
-                        </nav>
-                    </div>
-                    <Button variant="outline" size="icon" className="mr-2 md:hidden">
-                        <Menu className="h-4 w-4" />
-                    </Button>
-                    <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
-                        <div className="w-full flex-1 md:w-auto md:flex-none">
-                            <div className="relative">
-                                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                                <Input placeholder="Search products..." className="pl-8 w-full md:w-[300px]" />
-                            </div>
-                        </div>
-                        <nav className="flex items-center space-x-2">
-                            <Link href="/cart">
-                                <Button variant="ghost" size="icon">
-                                    <ShoppingCart className="h-4 w-4" />
-                                    <span className="sr-only">Cart</span>
-                                </Button>
-                            </Link>
-                            <Link href="/account">
-                                <Button variant="ghost" size="icon">
-                                    <User className="h-4 w-4" />
-                                    <span className="sr-only">Account</span>
-                                </Button>
-                            </Link>
-                        </nav>
-                    </div>
-                </div>
-            </header>
+            <Navbar />
 
             <main className="container py-8 mx-auto px-4 flex-1">
                 <div className="mb-6">
@@ -70,17 +32,26 @@ export default async function ProductPage({ params }: { params: { id: string } }
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                    {/* Left: Images */}
-                    <ProductGallery
-                        images={[product.image, product.image, product.image, product.image]}
-                        isDigitalTwin={product.isDigitalTwin}
-                        name={product.name}
-                    />
+                    {/* Left: Images with Holographic Glow */}
+                    <div className="relative group/gallery">
+                        <div className="absolute -inset-4 bg-gradient-to-tr from-indigo-500/20 to-purple-500/20 rounded-[2.5rem] blur-2xl opacity-0 group-hover/gallery:opacity-100 transition-opacity duration-700" />
+                        <ProductGallery
+                            images={[product.image, product.image, product.image, product.image]}
+                            isDigitalTwin={product.isDigitalTwin}
+                            name={product.name}
+                        />
+                    </div>
 
                     {/* Right: Details */}
                     <div className="space-y-6">
                         <div>
-                            <h1 className="text-3xl font-bold">{product.name}</h1>
+                            <motion.h1
+                                initial={{ opacity: 0, x: 20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                className="text-3xl font-bold"
+                            >
+                                {product.name}
+                            </motion.h1>
                             <div className="flex items-center space-x-4 mt-2">
                                 <div className="flex items-center text-yellow-500">
                                     <Star className="w-5 h-5 fill-current" />
@@ -104,23 +75,47 @@ export default async function ProductPage({ params }: { params: { id: string } }
                             )}
                         </div>
 
-                        <div className="prose dark:prose-invert">
-                            <p>{product.description}</p>
+                        <div className="prose dark:prose-invert max-w-none">
+                            <p className="text-slate-600 dark:text-slate-400 leading-relaxed italic border-l-4 border-indigo-500 pl-4 py-2 bg-indigo-50/30 dark:bg-indigo-950/20 rounded-r-lg">
+                                {product.description}
+                            </p>
                         </div>
 
-                        <Card className="bg-slate-50 dark:bg-slate-900">
-                            <CardContent className="p-4 space-y-4">
+                        <Card className="bg-slate-50 dark:bg-slate-900 border-none shadow-xl shadow-slate-200/50 dark:shadow-none">
+                            <CardContent className="p-6 space-y-4">
                                 <div className="flex items-center space-x-2 text-green-600 dark:text-green-400">
                                     <Truck className="w-5 h-5" />
                                     <span className="font-medium">Free Delivery by Tomorrow</span>
                                 </div>
-                                <div className="space-y-2">
-                                    <Button size="lg" className="w-full">Add to Cart</Button>
-                                    <Button size="lg" variant="secondary" className="w-full">Buy Now</Button>
+                                <div className="space-y-3">
+                                    <Button
+                                        size="lg"
+                                        className="w-full h-14 text-lg font-bold shadow-lg hover:shadow-indigo-500/25 transition-all active:scale-95"
+                                        onClick={() => {
+                                            addItem.mutate({ productId: product.id, quantity: 1 });
+                                            import('canvas-confetti').then(confetti => {
+                                                confetti.default({
+                                                    particleCount: 150,
+                                                    spread: 80,
+                                                    origin: { y: 0.7 },
+                                                    colors: ['#6366f1', '#a855f7', '#ec4899']
+                                                });
+                                            });
+                                        }}
+                                    >
+                                        Add to Cart
+                                    </Button>
+                                    <Button
+                                        size="lg"
+                                        variant="outline"
+                                        className="w-full h-14 text-lg font-bold border-2"
+                                    >
+                                        Buy Now
+                                    </Button>
                                 </div>
                                 <div className="flex items-center justify-center space-x-4 pt-2">
-                                    <Button variant="ghost" size="sm" className="text-muted-foreground">
-                                        <Heart className="w-4 h-4 mr-2" /> Save
+                                    <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-red-500">
+                                        <Heart className="w-4 h-4 mr-2" /> Save to Wishlist
                                     </Button>
                                     <Button variant="ghost" size="sm" className="text-muted-foreground">
                                         <Share2 className="w-4 h-4 mr-2" /> Share
