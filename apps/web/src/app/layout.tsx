@@ -14,6 +14,7 @@ import { BottomNav } from "@/components/mobile/bottom-nav";
 import Link from "next/link";
 import { AIChatWidget } from "@/components/ai/chat-widget";
 import { CommandMenu } from "@/components/layout/command-menu";
+import { CursorFollower } from "@/components/ui/cursor-follower";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -66,6 +67,7 @@ export default function RootLayout({
                     </div>
                     <AIChatWidget />
                     <CommandMenu />
+                    <CursorFollower />
                   </AnimationProvider>
                 </CartProvider>
               </WalletProvider>
