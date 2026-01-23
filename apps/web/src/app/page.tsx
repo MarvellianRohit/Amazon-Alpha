@@ -1,82 +1,22 @@
 import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
-import { Search, ShoppingCart, User, Menu, Star, Sparkles, TrendingUp } from "lucide-react"
+import { Star, Sparkles } from "lucide-react"
 import { CATEGORIES, PRODUCTS } from "@/lib/mock-data"
 import { Price } from "@/components/ui/price"
+import { SpotlightCard } from "@/components/ui/spotlight-card"
+import HeroCarousel from "@/components/home/hero-carousel"
 
 export default function Home() {
   return (
     <div className="flex min-h-screen flex-col bg-slate-50 dark:bg-slate-950">
-      {/* Header */}
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-16 items-center mx-auto px-4">
-          <div className="mr-8 hidden md:flex">
-            <Link href="/" className="mr-6 flex items-center space-x-2">
-              <span className="hidden font-bold sm:inline-block text-xl">
-                Amazon<span className="text-primary">Alpha</span>
-              </span>
-            </Link>
-            <nav className="flex items-center space-x-6 text-sm font-medium">
-              <Link href="/products" className="transition-colors hover:text-foreground/80 text-foreground/60">Products</Link>
-              <Link href="/categories" className="transition-colors hover:text-foreground/80 text-foreground/60">Categories</Link>
-              <Link href="/deals" className="transition-colors hover:text-foreground/80 text-foreground/60">Deals</Link>
-            </nav>
-          </div>
-          <Button variant="outline" size="icon" className="mr-2 md:hidden">
-            <Menu className="h-4 w-4" />
-          </Button>
-          <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
-            <div className="w-full flex-1 md:w-auto md:flex-none">
-              <div className="relative">
-                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input placeholder="Search products..." className="pl-8 w-full md:w-[300px]" />
-              </div>
-            </div>
-            <nav className="flex items-center space-x-2">
-              <Link href="/cart">
-                <Button variant="ghost" size="icon">
-                  <ShoppingCart className="h-4 w-4" />
-                  <span className="sr-only">Cart</span>
-                </Button>
-              </Link>
-              <Link href="/account">
-                <Button variant="ghost" size="icon">
-                  <User className="h-4 w-4" />
-                  <span className="sr-only">Account</span>
-                </Button>
-              </Link>
-            </nav>
-          </div>
-        </div>
-      </header>
 
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="space-y-6 pb-8 pt-6 md:pb-12 md:pt-10 lg:py-32 bg-gradient-to-r from-blue-600 to-violet-600 text-white dark:from-blue-900 dark:to-violet-900">
-          <div className="container flex max-w-[64rem] flex-col items-center gap-4 text-center mx-auto px-4">
-            <Badge variant="secondary" className="rounded-full px-4 py-1 text-sm bg-white/10 hover:bg-white/20 text-white border-none backdrop-blur-sm">
-              <Sparkles className="mr-2 h-4 w-4 text-yellow-300" />
-              AI-Powered Shopping is Here
-            </Badge>
-            <h1 className="font-heading text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight">
-              The Future of E-Commerce
-            </h1>
-            <p className="max-w-[42rem] leading-normal text-white/80 sm:text-xl sm:leading-8">
-              Experience a marketplace built for agents and humans alike. Verified provenance, AI negotiations, and seamless crypto payments.
-            </p>
-            <div className="space-x-4">
-              <Button size="lg" variant="secondary" className="gap-2">
-                Start Shopping <TrendingUp className="h-4 w-4" />
-              </Button>
-              <Button size="lg" variant="outline" className="bg-transparent text-white border-white hover:bg-white/10 hover:text-white">
-                Sell a Product
-              </Button>
-            </div>
-          </div>
+        <section className="space-y-6 pb-8 pt-6 md:pb-12 md:pt-10 lg:py-12">
+          <HeroCarousel />
         </section>
 
         {/* Featured Categories */}
@@ -84,11 +24,13 @@ export default function Home() {
           <h2 className="text-3xl font-bold tracking-tight mb-8">Shop by Category</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {CATEGORIES.map((cat) => (
-              <Link key={cat.id} href={`/category/${cat.id}`} className="group relative overflow-hidden rounded-lg aspect-square">
-                <Image src={cat.image} alt={cat.name} fill className="object-cover transition-transform group-hover:scale-105" />
-                <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                  <h3 className="text-white text-xl font-bold">{cat.name}</h3>
-                </div>
+              <Link key={cat.id} href={`/category/${cat.id}`}>
+                <SpotlightCard className="group aspect-square h-full">
+                  <Image src={cat.image} alt={cat.name} fill className="object-cover transition-transform group-hover:scale-105" />
+                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                    <h3 className="text-white text-xl font-bold">{cat.name}</h3>
+                  </div>
+                </SpotlightCard>
               </Link>
             ))}
           </div>
@@ -153,42 +95,6 @@ export default function Home() {
           </div>
         </section>
       </main>
-
-      <footer className="border-t bg-slate-950 text-slate-50 py-12">
-        <div className="container px-4 mx-auto grid grid-cols-2 md:grid-cols-4 gap-8">
-          <div>
-            <h4 className="font-bold text-lg mb-4">Shop</h4>
-            <ul className="space-y-2 text-sm text-slate-400">
-              <li>All Products</li>
-              <li>Electronics</li>
-              <li>Clothing</li>
-              <li>Home</li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="font-bold text-lg mb-4">Support</h4>
-            <ul className="space-y-2 text-sm text-slate-400">
-              <li>Help Center</li>
-              <li>Returns</li>
-              <li>Contact Us</li>
-              <li>Shipping Status</li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="font-bold text-lg mb-4">Legal</h4>
-            <ul className="space-y-2 text-sm text-slate-400">
-              <li>Privacy Policy</li>
-              <li>Terms of Service</li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="font-bold text-lg mb-4">Amazon Alpha</h4>
-            <p className="text-sm text-slate-400">
-              The next generation of e-commerce, powered by AI and Blockchain technology.
-            </p>
-          </div>
-        </div>
-      </footer>
     </div>
   )
 }

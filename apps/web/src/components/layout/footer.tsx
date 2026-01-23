@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function Footer() {
     return (
         <footer className="bg-gray-50 border-t py-12 mt-auto">
@@ -12,24 +14,24 @@ export default function Footer() {
                     <div>
                         <h4 className="font-semibold mb-4">Shop</h4>
                         <ul className="space-y-2 text-sm text-gray-500">
-                            <li>All Products</li>
-                            <li>Electronics</li>
-                            <li>Clothing</li>
+                            <li><Link href="/products" className="hover:text-primary transition-colors">All Products</Link></li>
+                            <li><Link href="/category/electronics" className="hover:text-primary transition-colors">Electronics</Link></li>
+                            <li><Link href="/category/fashion" className="hover:text-primary transition-colors">Clothing</Link></li>
                         </ul>
                     </div>
                     <div>
                         <h4 className="font-semibold mb-4">Support</h4>
                         <ul className="space-y-2 text-sm text-gray-500">
-                            <li>Help Center</li>
-                            <li>Returns</li>
-                            <li>Contact Us</li>
+                            <li><Link href="/help" className="hover:text-primary transition-colors">Help Center</Link></li>
+                            <li><Link href="/returns" className="hover:text-primary transition-colors">Returns</Link></li>
+                            <li><Link href="/contact" className="hover:text-primary transition-colors">Contact Us</Link></li>
                         </ul>
                     </div>
                     <div>
                         <h4 className="font-semibold mb-4">Legal</h4>
                         <ul className="space-y-2 text-sm text-gray-500">
-                            <li>Privacy Policy</li>
-                            <li>Terms of Service</li>
+                            <li><Link href="/legal/privacy" className="hover:text-primary transition-colors">Privacy Policy</Link></li>
+                            <li><Link href="/legal/terms" className="hover:text-primary transition-colors">Terms of Service</Link></li>
                         </ul>
                     </div>
                 </div>

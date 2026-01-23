@@ -3,6 +3,7 @@
 import { useState, useRef, MouseEvent } from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { TiltCard } from "@/components/ui/tilt-card";
 
 interface ProductGalleryProps {
     images: string[];
@@ -35,13 +36,15 @@ export function ProductGallery({ images, title }: ProductGalleryProps) {
                 onMouseLeave={() => setShowZoom(false)}
                 onMouseMove={handleMouseMove}
             >
-                <Image
-                    src={selectedImage}
-                    alt={title}
-                    fill
-                    className="object-contain p-4"
-                    priority
-                />
+                <TiltCard className="w-full h-full">
+                    <Image
+                        src={selectedImage}
+                        alt={title}
+                        fill
+                        className="object-contain p-4"
+                        priority
+                    />
+                </TiltCard>
 
                 {/* Lens / Zoom Window Overlay */}
                 {showZoom && (

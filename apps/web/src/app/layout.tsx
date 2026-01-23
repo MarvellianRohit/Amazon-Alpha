@@ -4,12 +4,16 @@ import "./globals.css";
 import { AuthProvider } from "@/components/providers/auth-provider";
 import QueryProvider from "@/components/providers/query-provider";
 import { CurrencyProvider } from "@/components/providers/currency-provider";
+import { WalletProvider } from "@/components/providers/wallet-provider";
+import { CartProvider } from "@/components/providers/cart-provider";
+import { AnimationProvider } from "@/components/providers/animation-provider";
 import { Navbar } from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
 import { BottomNav } from "@/components/mobile/bottom-nav";
 
 import Link from "next/link";
 import { AIChatWidget } from "@/components/ai/chat-widget";
+import { CommandMenu } from "@/components/layout/command-menu";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -47,17 +51,24 @@ export default function RootLayout({
         <QueryProvider>
           <AuthProvider>
             <CurrencyProvider>
-              <Navbar />
-              <main className="min-h-screen pb-16 md:pb-0">
-                {children}
-              </main>
-              <div className="md:hidden">
-                <BottomNav />
-              </div>
-              <div className="hidden md:block">
-                <Footer />
-              </div>
-              <AIChatWidget />
+              <WalletProvider>
+                <CartProvider>
+                  <AnimationProvider>
+                    <Navbar />
+                    <main className="min-h-screen pb-16 md:pb-0">
+                      {children}
+                    </main>
+                    <div className="md:hidden">
+                      <BottomNav />
+                    </div>
+                    <div className="hidden md:block">
+                      <Footer />
+                    </div>
+                    <AIChatWidget />
+                    <CommandMenu />
+                  </AnimationProvider>
+                </CartProvider>
+              </WalletProvider>
             </CurrencyProvider>
           </AuthProvider>
         </QueryProvider>

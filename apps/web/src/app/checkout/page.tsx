@@ -1,4 +1,6 @@
 
+"use client";
+
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -7,8 +9,44 @@ import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { CreditCard, Lock, CheckCircle2 } from "lucide-react"
+import confetti from "canvas-confetti";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export default function CheckoutPage() {
+    const router = useRouter();
+
+    const handlePlaceOrder = () => {
+        // Trigger Confetti
+        const duration = 5 * 1000;
+        const animationEnd = Date.now() + duration;
+        const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+        const randomInRange = (min: number, max: number) => {
+            return Math.random() * (max - min) + min;
+        }
+
+        const interval: any = setInterval(function () {
+            const timeLeft = animationEnd - Date.now();
+
+            if (timeLeft <= 0) {
+                return clearInterval(interval);
+            }
+
+            const particleCount = 50 * (timeLeft / duration);
+
+            // since particles fall down, start a bit higher than random
+            confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } });
+            confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } });
+        }, 250);
+
+        toast.success("Order Placed Successfully! (Simulation)");
+
+        // Redirect after delay
+        setTimeout(() => {
+            router.push('/account/orders');
+        }, 3000);
+    };
     return (
         <div className="min-h-screen bg-slate-50 dark:bg-slate-950 py-8">
             <div className="container mx-auto px-4 max-w-4xl">
@@ -115,7 +153,11 @@ export default function CheckoutPage() {
                                         <span>$581.03</span>
                                     </div>
                                 </div>
-                                <Button size="lg" className="w-full mt-8 bg-green-500 hover:bg-green-600 text-white font-bold">
+                                <Button
+                                    size="lg"
+                                    className="w-full mt-8 bg-green-500 hover:bg-green-600 text-white font-bold"
+                                    onClick={handlePlaceOrder}
+                                >
                                     Place Order
                                 </Button>
                                 <div className="mt-4 flex items-center justify-center text-xs text-white/60">

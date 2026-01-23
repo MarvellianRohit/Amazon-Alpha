@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Star, Truck, ShieldCheck, Heart, Share2, ArrowLeft, Search, ShoppingCart, User, Menu } from "lucide-react"
 import { PRODUCTS } from "@/lib/mock-data"
 import { Price } from "@/components/ui/price"
+import { ProductGallery } from "@/components/product/product-gallery"
 
 // This is a dynamic route component
 export default async function ProductPage({ params }: { params: { id: string } }) {
@@ -70,30 +71,11 @@ export default async function ProductPage({ params }: { params: { id: string } }
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
                     {/* Left: Images */}
-                    <div className="space-y-4">
-                        <div className="aspect-square relative overflow-hidden rounded-xl border bg-white dark:bg-slate-900">
-                            <Image
-                                src={product.image}
-                                alt={product.name}
-                                fill
-                                className="object-contain p-8"
-                                priority
-                            />
-                            {product.isDigitalTwin && (
-                                <div className="absolute top-4 left-4 bg-purple-600 text-white px-3 py-1 rounded-full text-xs font-bold flex items-center shadow-lg">
-                                    <ShieldCheck className="w-3 h-3 mr-1" />
-                                    Digital Twin Verified
-                                </div>
-                            )}
-                        </div>
-                        <div className="grid grid-cols-4 gap-4">
-                            {[1, 2, 3, 4].map((i) => (
-                                <div key={i} className="aspect-square relative rounded-lg border bg-white dark:bg-slate-900 cursor-pointer hover:ring-2 hover:ring-primary">
-                                    <Image src={product.image} alt="Thumbnail" fill className="object-cover" />
-                                </div>
-                            ))}
-                        </div>
-                    </div>
+                    <ProductGallery
+                        images={[product.image, product.image, product.image, product.image]}
+                        isDigitalTwin={product.isDigitalTwin}
+                        name={product.name}
+                    />
 
                     {/* Right: Details */}
                     <div className="space-y-6">

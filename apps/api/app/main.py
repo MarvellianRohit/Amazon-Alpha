@@ -57,7 +57,13 @@ app.include_router(existing_vendor.router, prefix="/api/v1/vendor", tags=["Vendo
 app.include_router(existing_student.router, prefix="/api/v1/students", tags=["Student Exclusive"])
 app.include_router(ai.router, prefix="/api/v1/ai", tags=["AI Engine"])
 app.include_router(vendor_ai.router, prefix="/api/v1/vendor/ai", tags=["Vendor Portal"]) # Nested under vendor
+from app.routers import vendor_analytics
+app.include_router(vendor_analytics.router, prefix="/api/v1/vendor", tags=["Vendor Portal"])
 app.include_router(github.router, prefix="/api/v1/github", tags=["DevOps"])
+
+# User Management
+from app.routers import user
+app.include_router(user.router, prefix="/api/v1/users", tags=["User Management"])
 
 # Agentic AI
 from app.routers import signals

@@ -1,0 +1,17 @@
+{
+    "name": "smart-contracts",
+    "version": "1.0.0",
+    "description": "Smart Contract scripts",
+    "main": "index.js",
+    "scripts": {
+        "deploy": "ts-node scripts/deploy.ts"
+    },
+    "dependencies": {
+        "dotenv": "^16.4.7",
+        "viem": "^2.23.0"
+    },
+    "devDependencies": {
+        "ts-node": "^10.9.2",
+        "typescript": "^5.7.3"
+    }
+}

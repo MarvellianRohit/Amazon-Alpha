@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Github, Database } from "lucide-react";
 
-// TODO: Replace with the actual repository
+const REPO_URL = "https://github.com/example/amazon-alpha";
 const GITHUB_REPO = "facebook/react"; // Placeholder
 
 async function getReadme() {

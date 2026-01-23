@@ -17,12 +17,22 @@ import {
 import { useCurrency } from "@/components/providers/currency-provider"
 import { SUPPORTED_CURRENCIES, CurrencyCode } from "@/lib/currencies"
 
+import { connectWallet } from "@/lib/web3"
+
 export default function Header() {
-    const { user, signOut } = useAuth()
+    const { user, logout } = useAuth()
     const { currency, setCurrency } = useCurrency();
     const [isStudent, setIsStudent] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
+    const [walletAddress, setWalletAddress] = useState<string | null>(null);
     const router = useRouter();
+
+    const handleConnectWallet = async () => {
+        const address = await connectWallet();
+        if (address) {
+            setWalletAddress(address);
+        }
+    };
 
     useEffect(() => {
         // Mock check
@@ -94,7 +104,19 @@ export default function Header() {
                     {user ? (
                         <>
                             <Link href="/vendor/dashboard" className="text-sm font-medium">Vendor Dashboard</Link>
-                            <Button variant="ghost" onClick={signOut} size="sm">
+
+                            {/* Wallet Connection */}
+                            {walletAddress ? (
+                                <div className="text-xs border px-2 py-1 rounded bg-slate-50 font-mono">
+                                    {walletAddress.slice(0, 6)}...{walletAddress.slice(-4)}
+                                </div>
+                            ) : (
+                                <Button variant="outline" size="sm" onClick={handleConnectWallet} className="gap-2">
+                                    <span className="text-xs">Connect Wallet</span>
+                                </Button>
+                            )}
+
+                            <Button variant="ghost" onClick={() => logout()} size="sm">
                                 <LogOut className="h-4 w-4 mr-2" /> Logout
                             </Button>
                         </>

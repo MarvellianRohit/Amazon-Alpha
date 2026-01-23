@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { useState, useRef, useEffect } from "react";
@@ -5,12 +6,16 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Bot, Send, X, Minimize2, Sparkles, Loader2 } from "lucide-react";
+import { Bot, Send, X, Minimize2, Sparkles, Loader2, ShoppingCart } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { PRODUCTS } from "@/lib/mock-data";
+import { Price } from "@/components/ui/price";
+import { useCart } from "@/hooks/use-cart";
+import { toast } from "sonner";
 
 type Message = {
     role: "user" | "assistant";
-    content: string;
+    content: React.ReactNode;
 };
 
 export function AIChatWidget() {
@@ -20,6 +25,7 @@ export function AIChatWidget() {
     ]);
     const [input, setInput] = useState("");
     const [isLoading, setIsLoading] = useState(false);
+    const { addItem } = useCart();
     const scrollRef = useRef<HTMLDivElement>(null);
 
     // Auto-scroll to bottom
@@ -45,14 +51,47 @@ export function AIChatWidget() {
             });
             const data = await res.json();
 
-            if (data.answer) {
-                setMessages(prev => [...prev, { role: "assistant", content: data.answer }]);
-            } else {
-                setMessages(prev => [...prev, { role: "assistant", content: "I encountered an error accessing my memory." }]);
+            let responseContent: React.ReactNode = data.answer;
+
+            if (data.recommended_products && data.recommended_products.length > 0) {
+                responseContent = (
+                    <div className="flex flex-col gap-2">
+                        <p>{data.answer}</p>
+                        <div className="flex flex-col gap-2 mt-1">
+                            {data.recommended_products.map((product: any) => (
+                                <div key={product.id} className="bg-slate-50 border p-2 rounded-md flex gap-2 items-center hover:bg-slate-100 transition-colors cursor-pointer group">
+                                    <div className="relative w-12 h-12 bg-white rounded-md overflow-hidden flex-shrink-0">
+                                        <img src={product.image} alt={product.name} className="object-cover w-full h-full" />
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-xs font-bold truncate group-hover:text-indigo-600 transition-colors">{product.name}</p>
+                                        <div className="flex items-center justify-between mt-1">
+                                            <div className="text-xs text-muted-foreground"><Price amount={product.price} /></div>
+                                            <Button
+                                                size="icon"
+                                                variant="secondary"
+                                                className="h-6 w-6"
+                                                onClick={() => {
+                                                    addItem.mutate({ productId: product.id, quantity: 1 });
+                                                    toast.success("Added to cart");
+                                                }}
+                                            >
+                                                <ShoppingCart className="w-3 h-3" />
+                                            </Button>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                );
             }
 
+            setMessages(prev => [...prev, { role: "assistant", content: responseContent }]);
+
         } catch (error) {
-            setMessages(prev => [...prev, { role: "assistant", content: "Connection Error. Is the backend running?" }]);
+            console.error("Chat Error:", error);
+            setMessages(prev => [...prev, { role: "assistant", content: "Connection Error. Ensure Backend is running on port 8000." }]);
         } finally {
             setIsLoading(false);
         }

@@ -1,53 +1,88 @@
-"use client"
+"use client";
 
-import { createContext, useContext, useEffect, useState } from 'react'
-import { User, Session } from '@supabase/supabase-js'
-import { createClient } from '@/lib/supabase/client'
-import { useRouter } from 'next/navigation'
+import { createContext, useContext, useEffect, useState } from "react";
+import { useRouter, usePathname } from "next/navigation";
+import { toast } from "sonner";
 
-type AuthContextType = {
-    user: User | null
-    session: Session | null
-    loading: boolean
-    signOut: () => Promise<void>
+interface User {
+    id: string;
+    email: string;
+    name?: string;
+    role?: string;
+}
+
+interface AuthContextType {
+    user: User | null;
+    isLoading: boolean;
+    login: (token: string, user: User) => void;
+    logout: () => void;
+    isAuthenticated: boolean;
 }
 
 const AuthContext = createContext<AuthContextType>({
     user: null,
-    session: null,
-    loading: true,
-    signOut: async () => { },
-})
+    isLoading: true,
+    login: () => { },
+    logout: () => { },
+    isAuthenticated: false,
+});
 
-export const useAuth = () => {
-    return useContext(AuthContext)
-}
+export const useAuth = () => useContext(AuthContext);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-    const [user, setUser] = useState<User | null>(null)
-    const [session, setSession] = useState<Session | null>(null)
-    const [loading, setLoading] = useState(true)
-    const router = useRouter()
-    const supabase = createClient()
+    const [user, setUser] = useState<User | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const router = useRouter();
+    const pathname = usePathname();
 
+    // Check for token on mount
     useEffect(() => {
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-            setSession(session)
-            setUser(session?.user ?? null)
-            setLoading(false)
-        })
+        const token = localStorage.getItem("auth_token");
+        const storedUser = localStorage.getItem("auth_user");
 
-        return () => subscription.unsubscribe()
-    }, [supabase])
+        if (token && storedUser) {
+            try {
+                setUser(JSON.parse(storedUser));
+            } catch (e) {
+                console.error("Failed to parse stored user", e);
+                localStorage.removeItem("auth_token");
+                localStorage.removeItem("auth_user");
+            }
+        }
+        setIsLoading(false);
+    }, []);
 
-    const signOut = async () => {
-        await supabase.auth.signOut()
-        router.refresh()
-    }
+    // Protect routes
+    useEffect(() => {
+        if (isLoading) return;
+
+        const protectedRoutes = ["/account", "/vendor", "/admin"];
+        const isProtected = protectedRoutes.some(route => pathname?.startsWith(route));
+
+        if (isProtected && !user) {
+            toast.error("Please login to access this page");
+            router.push(`/auth/login?redirect=${encodeURIComponent(pathname || '/')}`);
+        }
+    }, [isLoading, user, pathname, router]);
+
+    const login = (token: string, userData: User) => {
+        localStorage.setItem("auth_token", token);
+        localStorage.setItem("auth_user", JSON.stringify(userData));
+        setUser(userData);
+        toast.success("Logged in successfully");
+    };
+
+    const logout = () => {
+        localStorage.removeItem("auth_token");
+        localStorage.removeItem("auth_user");
+        setUser(null);
+        toast.success("Logged out");
+        router.push("/auth/login");
+    };
 
     return (
-        <AuthContext.Provider value={{ user, session, loading, signOut }}>
+        <AuthContext.Provider value={{ user, isLoading, login, logout, isAuthenticated: !!user }}>
             {children}
         </AuthContext.Provider>
-    )
+    );
 }

@@ -8,17 +8,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
 import { Package, DollarSign, Users, TrendingUp, Plus, ShieldCheck, ExternalLink } from "lucide-react"
 import { RECENT_ORDERS, PRODUCTS } from "@/lib/mock-data"
-import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip } from "recharts"
+import { AnalyticsCharts } from "@/components/vendor/analytics-charts"
 
-const SALES_DATA = [
-    { name: "Mon", total: 1200 },
-    { name: "Tue", total: 2100 },
-    { name: "Wed", total: 1800 },
-    { name: "Thu", total: 2400 },
-    { name: "Fri", total: 3200 },
-    { name: "Sat", total: 4500 },
-    { name: "Sun", total: 3800 },
-]
+
 
 export default function VendorDashboard() {
     return (
@@ -82,48 +74,11 @@ export default function VendorDashboard() {
                     </Card>
                 </div>
 
-                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-                    {/* Chart */}
-                    <Card className="col-span-4">
-                        <CardHeader>
-                            <CardTitle>Weekly Overview</CardTitle>
-                        </CardHeader>
-                        <CardContent className="pl-2">
-                            <div className="h-[300px] w-full">
-                                <ResponsiveContainer width="100%" height="100%">
-                                    <BarChart data={SALES_DATA}>
-                                        <XAxis
-                                            dataKey="name"
-                                            stroke="#888888"
-                                            fontSize={12}
-                                            tickLine={false}
-                                            axisLine={false}
-                                        />
-                                        <YAxis
-                                            stroke="#888888"
-                                            fontSize={12}
-                                            tickLine={false}
-                                            axisLine={false}
-                                            tickFormatter={(value) => `$${value}`}
-                                        />
-                                        <Tooltip
-                                            contentStyle={{ background: '#333', border: 'none', borderRadius: '4px', color: '#fff' }}
-                                            cursor={{ fill: 'transparent' }}
-                                        />
-                                        <Bar
-                                            dataKey="total"
-                                            fill="currentColor"
-                                            radius={[4, 4, 0, 0]}
-                                            className="fill-primary"
-                                        />
-                                    </BarChart>
-                                </ResponsiveContainer>
-                            </div>
-                        </CardContent>
-                    </Card>
+                {/* Dynamic Analytics Charts */}
+                <AnalyticsCharts />
 
-                    {/* Recent Sales/Products */}
-                    <Card className="col-span-3">
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+                    <Card className="col-span-7">
                         <CardHeader>
                             <CardTitle>Top Products</CardTitle>
                             <CardDescription>Your best performing items this month.</CardDescription>

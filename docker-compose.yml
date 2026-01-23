@@ -18,6 +18,21 @@ services:
       kong:
         condition: service_started
 
+  # Web Frontend
+  web:
+    container_name: amazon-alpha-web
+    build:
+      context: ./apps/web
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8080 # Client-side access
+      API_URL: http://api:8000 # Server-side access
+    depends_on:
+      api:
+        condition: service_started
+
   # Supabase Services
   studio:
     container_name: supabase-studio

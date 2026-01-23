@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react"
+import { motion, useScroll } from "framer-motion"
 import { useParams, useRouter } from "next/navigation"
 import { useCart } from "@/hooks/use-cart"
 import { ProductGallery } from "@/components/pdp/product-gallery"
@@ -14,6 +15,7 @@ import { toast } from "sonner"
 import { Loader2, ArrowLeft } from "lucide-react"
 import Link from "next/link"
 import { MobileStickyFooter } from "@/components/mobile/sticky-footer"
+import { NegotiationChat } from "@/components/product/negotiation-chat"
 
 // Placeholder for search focus
 const focusSearch = () => {
@@ -31,6 +33,7 @@ export default function ProductPage() {
     const { addItem } = useCart()
     const { addToHistory } = useViewHistory()
     const router = useRouter()
+    const { scrollYProgress } = useScroll()
 
     // Keyboard Shortcuts
     useKeyboardShortcuts({
@@ -120,7 +123,11 @@ export default function ProductPage() {
     return (
         <div className="min-h-screen bg-slate-50/50">
             {/* Breadcrumb / Back */}
-            <div className="border-b bg-white">
+            <div className="border-b bg-white relative z-20">
+                <motion.div
+                    style={{ scaleX: scrollYProgress }}
+                    className="absolute bottom-0 left-0 right-0 h-1 bg-indigo-600 origin-left"
+                />
                 <div className="container mx-auto px-4 py-3">
                     <Link href="/" className="inline-flex items-center text-sm text-gray-500 hover:text-blue-600 transition-colors">
                         <ArrowLeft className="mr-2 h-4 w-4" />
@@ -153,13 +160,18 @@ export default function ProductPage() {
                     </div>
 
                     {/* Column 3: Buy Box (Sticky) - Spans 3 cols */}
-                    <div className="lg:col-span-3 sticky top-24 z-10 hidden lg:block">
+                    <div className="lg:col-span-3 sticky top-24 z-10 hidden lg:block space-y-6">
                         <ProductSidebar
                             product={product}
                             isStudent={isStudent}
                             studentPrice={studentPrice}
                             onAddToCart={handleAddToCart}
                             onBuyNow={handleBuyNow}
+                        />
+                        <NegotiationChat
+                            productId={product.id}
+                            productName={product.name}
+                            initialPrice={product.price}
                         />
                     </div>
                 </div>
