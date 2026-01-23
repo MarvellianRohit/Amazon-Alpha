@@ -75,12 +75,18 @@ export function DeviceFrame({ device, orientation, scale = 1, url = "http://loca
                     )} />
                 )}
 
-                {/* Content - Using iframe to simulate isolated viewport */}
-                <iframe
-                    src={url}
-                    className="w-full h-full border-none bg-white pt-12 pb-8"
-                    title="Device Preview"
-                />
+                {/* Content */}
+                {children ? (
+                    <div className="w-full h-full pt-12">
+                        {children}
+                    </div>
+                ) : (
+                    <iframe
+                        src={url}
+                        className="w-full h-full border-none bg-white pt-12 pb-8"
+                        title="Device Preview"
+                    />
+                )}
 
                 {/* Home Indicator */}
                 <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-1/3 h-1.5 bg-black/20 rounded-full z-50 pointer-events-none mix-blend-difference" />

@@ -108,9 +108,12 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
                                     <Button
                                         size="lg"
                                         variant="outline"
-                                        className="w-full h-14 text-lg font-bold border-2"
+                                        className="w-full h-14 text-lg font-bold border-2 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors"
+                                        asChild
                                     >
-                                        Buy Now
+                                        <Link href={`/simulator?productId=${product.id}`}>
+                                            Inspect in Holodeck
+                                        </Link>
                                     </Button>
                                 </div>
                                 <div className="flex items-center justify-center space-x-4 pt-2">
