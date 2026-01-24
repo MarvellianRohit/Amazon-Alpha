@@ -1,0 +1,36 @@
+version: '3.9'
+
+services:
+  # Node 1: Virginia (Leader)
+  crdb-virginia:
+    image: cockroachdb/cockroach:v23.1.10
+    command: start --insecure --store=attrs=region=us-east1 --join=crdb-virginia,crdb-london,crdb-kolkata
+    hostname: crdb-virginia
+    ports:
+      - "26257:26257"
+      - "8081:8080" # Dashboard
+
+  # Node 2: London
+  crdb-london:
+    image: cockroachdb/cockroach:v23.1.10
+    command: start --insecure --store=attrs=region=europe-west1 --join=crdb-virginia,crdb-london,crdb-kolkata
+    hostname: crdb-london
+    depends_on:
+      - crdb-virginia
+
+  # Node 3: Kolkata
+  crdb-kolkata:
+    image: cockroachdb/cockroach:v23.1.10
+    command: start --insecure --store=attrs=region=asia-south1 --join=crdb-virginia,crdb-london,crdb-kolkata
+    hostname: crdb-kolkata
+    depends_on:
+      - crdb-virginia
+
+  # Initializer
+  init:
+    image: cockroachdb/cockroach:v23.1.10
+    command: init --insecure --host=crdb-virginia
+    depends_on:
+      - crdb-virginia
+      - crdb-london
+      - crdb-kolkata

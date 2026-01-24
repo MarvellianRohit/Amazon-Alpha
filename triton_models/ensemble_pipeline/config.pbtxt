@@ -1,0 +1,64 @@
+name: "ensemble_pipeline"
+platform: "ensemble"
+max_batch_size: 8
+
+input [
+  {
+    name: "INPUT_IMAGE"
+    data_type: TYPE_FP32
+    dims: [ 3, 640, 640 ]
+  }
+]
+output [
+  {
+    name: "FINAL_EMBEDDING"
+    data_type: TYPE_FP32
+    dims: [ 512 ]
+  },
+  {
+    name: "DETECTED_CLASS"
+    data_type: TYPE_STRING
+    dims: [ 1 ]
+  }
+]
+
+ensemble_scheduling {
+  step [
+    {
+      model_name: "yolo_v11_onnx"
+      model_version: -1
+      input_map {
+        key: "images"
+        value: "INPUT_IMAGE"
+      }
+      output_map {
+        key: "output"
+        value: "yolo_output"
+      }
+    },
+    {
+      model_name: "resnet50_int8"
+      model_version: -1
+      input_map {
+        key: "input_crop"
+        value: "yolo_output" 
+      }
+      output_map {
+        key: "class_label"
+        value: "DETECTED_CLASS"
+      }
+    },
+    {
+      model_name: "clip_vit_b32"
+      model_version: -1
+      input_map {
+        key: "input_crop"
+        value: "yolo_output"
+      }
+      output_map {
+        key: "embedding"
+        value: "FINAL_EMBEDDING"
+      }
+    }
+  ]
+}

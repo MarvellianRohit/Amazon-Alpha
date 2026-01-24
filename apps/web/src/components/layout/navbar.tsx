@@ -81,6 +81,11 @@ export function Navbar() {
                                     </nav>
                                     <div className="border-t my-2" />
                                     <nav className="flex flex-col gap-2">
+                                        <Link href="/ai-assistant" className="text-muted-foreground hover:text-primary">AI Genius</Link>
+                                        <Link href="/agent-dashboard" className="text-indigo-400 font-bold hover:text-indigo-300">Agent Dashboard</Link>
+                                        <Link href="/group-deals" className="text-muted-foreground hover:text-primary">Group Deals</Link>
+                                        <Link href="/live" className="text-muted-foreground hover:text-primary">Live Shopping</Link>
+                                        <Link href="/crypto-payment" className="text-muted-foreground hover:text-primary">Crypto Pay</Link>
                                         <Link href="/orders" className="flex items-center gap-2 text-muted-foreground hover:text-primary">
                                             <Package className="w-4 h-4" /> My Orders
                                         </Link>

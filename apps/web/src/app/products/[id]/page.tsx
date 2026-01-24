@@ -5,6 +5,7 @@ import { motion, useScroll } from "framer-motion"
 import { useParams, useRouter } from "next/navigation"
 import { useCart } from "@/hooks/use-cart"
 import { ProductGallery } from "@/components/pdp/product-gallery"
+import { Product3DViewer } from "@/components/product/Product3DViewer"
 import { ProductSpecs } from "@/components/pdp/product-specs"
 import { ProductSidebar } from "@/components/pdp/product-sidebar"
 import { PriceHistoryChart } from "@/components/pdp/price-history-chart"
@@ -12,10 +13,14 @@ import { PriceAlertDialog } from "@/components/pdp/price-alert-dialog"
 import { useKeyboardShortcuts } from "@/hooks/use-keyboard-shortcuts"
 import { useViewHistory } from "@/hooks/use-view-history"
 import { toast } from "sonner"
-import { Loader2, ArrowLeft } from "lucide-react"
+import { Loader2, ArrowLeft, Shirt, Maximize } from "lucide-react"
 import Link from "next/link"
 import { MobileStickyFooter } from "@/components/mobile/sticky-footer"
 import { NegotiationChat } from "@/components/product/negotiation-chat"
+import { Button } from "@/components/ui/button"
+import { VirtualTryOn } from "@/components/product/VirtualTryOn"
+import { SpatialRoomViewer } from "@/components/product/SpatialRoomViewer"
+import { ProductPassport } from "@/components/blockchain/ProductPassport"
 
 // Placeholder for search focus
 const focusSearch = () => {
@@ -34,6 +39,8 @@ export default function ProductPage() {
     const { addToHistory } = useViewHistory()
     const router = useRouter()
     const { scrollYProgress } = useScroll()
+    const [isTryOnOpen, setIsTryOnOpen] = useState(false);
+    const [isSpatialOpen, setIsSpatialOpen] = useState(false);
 
     // Keyboard Shortcuts
     useKeyboardShortcuts({
@@ -122,6 +129,10 @@ export default function ProductPage() {
 
     return (
         <div className="min-h-screen bg-slate-50/50">
+            {/* Try On Modal */}
+            {isTryOnOpen && <VirtualTryOn onClose={() => setIsTryOnOpen(false)} />}
+            {isSpatialOpen && <SpatialRoomViewer onClose={() => setIsSpatialOpen(false)} />}
+
             {/* Breadcrumb / Back */}
             <div className="border-b bg-white relative z-20">
                 <motion.div
@@ -141,8 +152,21 @@ export default function ProductPage() {
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
 
                     {/* Column 1: Gallery (Sticky) - Spans 5 cols */}
-                    <div className="lg:col-span-5 sticky top-24 z-10">
+                    <div className="lg:col-span-5 sticky top-24 z-10 space-y-4">
                         <ProductGallery images={galleryImages} title={product.name} />
+
+                        {/* 3D Viewer Integration */}
+                        <div className="w-full space-y-2">
+                            <h4 className="font-bold text-sm mb-2 text-neutral-500 uppercase tracking-wide">Phygital Experience</h4>
+                            <Product3DViewer />
+
+                            <Button onClick={() => setIsTryOnOpen(true)} className="w-full bg-black text-white hover:bg-neutral-800 mb-2" size="lg">
+                                <Shirt className="w-4 h-4 mr-2" /> Virtual Try-On (Beta)
+                            </Button>
+                            <Button onClick={() => setIsSpatialOpen(true)} className="w-full bg-white text-black border border-neutral-200 hover:bg-neutral-100" size="lg">
+                                <Maximize className="w-4 h-4 mr-2" /> View in My Room (LiDAR)
+                            </Button>
+                        </div>
                     </div>
 
                     {/* Column 2: Specs & Info (Scrollable) - Spans 4 cols */}
@@ -173,6 +197,7 @@ export default function ProductPage() {
                             productName={product.name}
                             initialPrice={product.price}
                         />
+                        <ProductPassport productId={product.id} />
                     </div>
                 </div>
             </div>

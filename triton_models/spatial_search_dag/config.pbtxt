@@ -1,0 +1,53 @@
+name: "spatial_search_dag"
+platform: "ensemble"
+max_batch_size: 16
+
+input [
+  {
+    name: "RAW_LIDAR"
+    data_type: TYPE_FP32
+    dims: [ 10000 ]
+  },
+  {
+    name: "USER_QUERY"
+    data_type: TYPE_STRING
+    dims: [ 1 ]
+  }
+]
+
+output [
+  {
+    name: "AGENT_RESPONSE"
+    data_type: TYPE_STRING
+    dims: [ 1 ]
+  }
+]
+
+ensemble_scheduling {
+  step [
+    # Step 1: Zero-Copy Preprocess
+    {
+      model_name: "spatial_backend"
+      model_version: -1
+      input_map { key: "lidar" value: "RAW_LIDAR" }
+      output_map { key: "voxel_grid" value: "INTERNAL_VOXELS" }
+    },
+    # Step 2: Object Detection (YOLOv11)
+    {
+      model_name: "yolov11_tensorrt"
+      model_version: -1
+      input_map { key: "input_images" value: "INTERNAL_VOXELS" }
+      output_map { key: "detections" value: "INTERNAL_OBJECTS" }
+    },
+    # Step 3: Agentic Reasoning (Llama-3)
+    {
+      model_name: "llama3_70b_quant"
+      model_version: -1
+      input_map { 
+        key: "prompt" value: "USER_QUERY"
+        key: "context" value: "INTERNAL_OBJECTS"
+      }
+      output_map { key: "response" value: "AGENT_RESPONSE" }
+    }
+  ]
+}

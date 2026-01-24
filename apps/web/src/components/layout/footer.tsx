@@ -42,7 +42,9 @@ export default function Footer() {
                         <h4 className="font-bold uppercase tracking-widest text-xs mb-6 text-indigo-500">Ecosystem</h4>
                         <ul className="space-y-3 text-sm text-slate-400">
                             <li><Link href="/account/profile" className="hover:text-white transition-colors">User Node</Link></li>
+                            <li><Link href="/account/wishlist" className="hover:text-white transition-colors">Wishlist</Link></li>
                             <li><Link href="/orders" className="hover:text-white transition-colors">Logistics Core</Link></li>
+                            <li><Link href="/gift-cards" className="hover:text-white transition-colors">Alpha-Credits</Link></li>
                             <li><Link href="/wallet" className="hover:text-white transition-colors">Pay-Layer</Link></li>
                         </ul>
                     </div>

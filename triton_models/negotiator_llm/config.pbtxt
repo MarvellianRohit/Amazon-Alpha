@@ -1,0 +1,44 @@
+name: "negotiator_llm"
+backend: "tensorrtllm"
+max_batch_size: 128
+
+model_transaction_policy {
+  decoupled: true
+}
+
+input [
+  {
+    name: "input_ids"
+    data_type: TYPE_INT32
+    dims: [ -1 ]
+  }
+]
+
+output [
+  {
+    name: "output_ids"
+    data_type: TYPE_INT32
+    dims: [ -1 ]
+  }
+]
+
+parameters {
+  key: "gpt_model_type"
+  value: { string_value: "V1" }
+}
+
+parameters {
+  key: "gpt_model_path"
+  value: { string_value: "/models/llama-3-8b-int8-engine" }
+}
+
+# Quantization & Batching Config
+parameters {
+    key: "enable_kv_cache_reuse"
+    value: { string_value: "true" }
+}
+
+parameters {
+    key: "batch_scheduler_policy"
+    value: { string_value: "guaranteed_completion" }
+}

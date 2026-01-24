@@ -15,6 +15,7 @@ import Link from "next/link";
 import { AIChatWidget } from "@/components/ai/chat-widget";
 import { CommandMenu } from "@/components/layout/command-menu";
 import { CursorFollower } from "@/components/ui/cursor-follower";
+import { AgentNotificationProvider } from "@/components/providers/agent-notification-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -55,10 +56,12 @@ export default function RootLayout({
               <WalletProvider>
                 <CartProvider>
                   <AnimationProvider>
-                    <Navbar />
-                    <main className="min-h-screen pb-16 md:pb-0">
-                      {children}
-                    </main>
+                    <AgentNotificationProvider>
+                      <Navbar />
+                      <main className="min-h-screen pb-16 md:pb-0">
+                        {children}
+                      </main>
+                    </AgentNotificationProvider>
                     <div className="md:hidden">
                       <BottomNav />
                     </div>

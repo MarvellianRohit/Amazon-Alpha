@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useAuth } from "@/components/providers/auth-provider"
-import { ShoppingCart, LogOut, GraduationCap, Search } from "lucide-react"
+import { ShoppingCart, LogOut, GraduationCap, Search, Heart } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useEffect, useState } from "react"
@@ -81,6 +81,13 @@ export default function Header() {
                         <ShoppingCart className="h-5 w-5" />
                         <span>Cart</span>
                     </Link>
+
+                    {user && (
+                        <Link href="/account/wishlist" className="hidden md:flex items-center gap-2 text-sm font-medium hover:text-gray-600 mr-2">
+                            <Heart className="h-4 w-4" />
+                            <span>Wishlist</span>
+                        </Link>
+                    )}
 
                     {user && (
                         <Link href="/orders" className="text-sm font-medium hover:text-gray-600">

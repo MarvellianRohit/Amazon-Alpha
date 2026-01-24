@@ -79,3 +79,70 @@ app.include_router(blockchain.router, prefix="/api/v1/blockchain", tags=["Produc
 from app.routers import social
 app.include_router(social.router, prefix="/api/v1/social", tags=["Social Discovery"])
 
+# Agentic Ecosystem
+from app.routers import agents
+from app.routers import notifications
+from app.routers import group_buy
+from app.routers import search
+
+app.include_router(agents.router, prefix="/api/v1/agents", tags=["Autonomous Agents"])
+app.include_router(group_buy.router, prefix="/api/v1/group-buy", tags=["Group Buy"])
+app.include_router(search.router, prefix="/api/v1/visual-search", tags=["Visual Search"])
+
+# Spanner Inventory
+from app.routers import inventory
+app.include_router(inventory.router, prefix="/api/v1/inventory", tags=["Global Ledger"])
+
+# Audit & Governance
+from app.routers import audit
+from app.routers import security
+app.include_router(audit.router, prefix="/api/v1/audit", tags=["Enterprise Governance"])
+app.include_router(security.router, prefix="/api/v1/security", tags=["Red Team Lab"])
+
+# Spanner Analytics
+from app.routers import analytics
+app.include_router(analytics.router, prefix="/api/v1/analytics", tags=["Data Boost"])
+
+# Local Inference (MLX)
+from app.routers import local_inference
+app.include_router(local_inference.router, prefix="/api/v1/local", tags=["On-Device AI"])
+
+# Offline Sync (CRDT)
+from app.routers import sync
+app.include_router(sync.router, prefix="/api/v1/sync", tags=["Offline Sync"])
+
+# Spatial AI (C++ Backend)
+from app.routers import spatial_ai
+app.include_router(spatial_ai.router, prefix="/api/v1/spatial", tags=["Sensor Fusion"])
+
+# Quorum & Reliability
+from app.routers import quorum
+app.include_router(quorum.router, prefix="/api/v1/quorum", tags=["SRE Reliability"])
+
+# Decision Room (Handoff)
+from app.routers import decision_room
+from app.routers import workflow
+app.include_router(decision_room.router, prefix="/api/v1/room", tags=["Decision Room"])
+app.include_router(workflow.router, prefix="/api/v1/workflow", tags=["Durable Async"])
+
+# Spatial Search (Ensemble)
+from app.routers import spatial_search
+app.include_router(spatial_search.router, prefix="/api/v1/spatial-search", tags=["Spatial Intelligence"])
+
+# Global CDN & Cache
+from app.middleware.telemetry import TelemetryMiddleware
+from app.middleware.entra_auth import EntraAuthMiddleware
+
+app.add_middleware(TelemetryMiddleware)
+app.add_middleware(EntraAuthMiddleware)
+
+from app.services.consistency_service import consistency_service
+from app.services.prefetch_service import prefetch_service
+
+@app.post("/api/v1/reviews/global")
+async def write_global_review(product_id: str, review: dict):
+    return await consistency_service.write_review(product_id, review)
+
+@app.get("/api/v1/cdn/prefetch")
+async def trigger_prefetch(user_id: str, category: str):
+    return await prefetch_service.predict_and_warm(user_id, category)

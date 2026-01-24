@@ -1,0 +1,28 @@
+name: "llama3_70b_quant"
+platform: "python" 
+max_batch_size: 4
+
+# Continuous Batching / In-Flight Batching Logic
+model_transaction_policy {
+  decoupled: true
+}
+
+input [
+  {
+    name: "prompt"
+    data_type: TYPE_STRING
+    dims: [ 1 ]
+  },
+  {
+    name: "context"
+    data_type: TYPE_FP32
+    dims: [ 100, 6 ]
+  }
+]
+output [
+  {
+    name: "response"
+    data_type: TYPE_STRING
+    dims: [ 1 ]
+  }
+]

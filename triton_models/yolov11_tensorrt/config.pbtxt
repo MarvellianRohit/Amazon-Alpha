@@ -1,0 +1,21 @@
+name: "yolov11_tensorrt"
+platform: "tensorrt_plan"
+max_batch_size: 16
+dynamic_batching {
+    preferred_batch_size: [ 4, 8, 16 ]
+    max_queue_delay_microseconds: 500
+}
+input [
+  {
+    name: "input_images"
+    data_type: TYPE_FP32
+    dims: [ 3, 640, 640 ]
+  }
+]
+output [
+  {
+    name: "detections"
+    data_type: TYPE_FP32
+    dims: [ 100, 6 ]
+  }
+]

@@ -1,0 +1,60 @@
+name: "spatial_ensemble"
+platform: "ensemble"
+max_batch_size: 64
+
+# Hardware Flex: Aggressive Dynamic Batching
+dynamic_batching {
+  max_queue_delay_microseconds: 1000 # 1ms
+}
+
+input [
+  {
+    name: "LIDAR_PC"
+    data_type: TYPE_FP32
+    dims: [ 1000, 3 ]
+  },
+  {
+    name: "SPEN_VEC"
+    data_type: TYPE_FP32
+    dims: [ 4 ]
+  }
+]
+
+output [
+  {
+    name: "SURFACE_TYPE"
+    data_type: TYPE_STRING
+    dims: [ 1 ]
+  },
+  {
+    name: "NEXT_LOCUS"
+    data_type: TYPE_FP32
+    dims: [ 2 ]
+  }
+]
+
+ensemble_scheduling {
+  step [
+    # Step 1: Zero-Copy Ingest (C++)
+    {
+      model_name: "spatial_backend"
+      model_version: -1
+      input_map { key: "lidar" value: "LIDAR_PC" }
+      output_map { key: "voxel_grid" value: "INTERNAL_GRID" }
+    },
+    # Step 2: Vision Transformer
+    {
+      model_name: "vit_b16"
+      model_version: -1
+      input_map { key: "input" value: "INTERNAL_GRID" }
+      output_map { key: "label" value: "SURFACE_TYPE" }
+    },
+    # Step 3: LSTM Trajectory (Parallel)
+    {
+      model_name: "lstm_motion"
+      model_version: -1
+      input_map { key: "vector" value: "SPEN_VEC" }
+      output_map { key: "prediction" value: "NEXT_LOCUS" }
+    }
+  ]
+}
