@@ -1,0 +1,38 @@
+name: "metal_ensemble"
+platform: "ensemble"
+max_batch_size: 16
+
+input [
+  {
+    name: "LIDAR_RAW"
+    data_type: TYPE_FP32
+    dims: [ 10000 ]
+  }
+]
+
+output [
+  {
+    name: "LLM_INTENT"
+    data_type: TYPE_STRING
+    dims: [ 1 ]
+  }
+]
+
+ensemble_scheduling {
+  step [
+    # Node 1: Metal Zero-Copy Preprocess
+    {
+      model_name: "metal_backend"
+      model_version: -1
+      input_map { key: "lidar" value: "LIDAR_RAW" }
+      output_map { key: "processed_vec" value: "INTERNAL_VEC" }
+    },
+    # Node 2: Quantized LLM (Simulated as TensorRT/MLX)
+    {
+      model_name: "llama3_70b_quant"
+      model_version: -1
+      input_map { key: "context" value: "INTERNAL_VEC" }
+      output_map { key: "response" value: "LLM_INTENT" }
+    }
+  ]
+}

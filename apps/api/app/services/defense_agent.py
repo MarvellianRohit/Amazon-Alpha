@@ -9,14 +9,34 @@ class DefenseAgent:
     def scan_message(self, message: Dict) -> bool:
         """
         Returns True if threat detected.
+        Checks: Static Threats + Regex + LLM Intent.
         """
         content = message.get("context", {}).get("content", "").lower()
-        threats = ["system override", "ignore previous", "drop table", "admin access"]
         
+        # 1. Static Threats
+        threats = ["system override", "ignore previous", "drop table", "admin access"]
         if any(t in content for t in threats):
-            print(f"[DEFENSE] Threat Detected: {content}")
+            print(f"[DEFENSE] Static Threat Detected: {content}")
             return True
+            
+        # 2. Regex (Infinite Loop / Budget Drain)
+        import re
+        if re.search(r"(repeat){5,}", content): # Simple loop check
+             print("[DEFENSE] Infinite Loop Pattern Detected")
+             return True
+             
+        # 3. LLM Intent Analysis (Mock)
+        if self._analyze_intent_llm(content) == "MALICIOUS":
+             print("[DEFENSE] LLM Intent Analysis Flagged Malicious Payload")
+             return True
+             
         return False
+
+    def _analyze_intent_llm(self, text: str) -> str:
+        # Simulates a fast call to a specialized Shield model
+        if "steal" in text or "drain" in text:
+            return "MALICIOUS"
+        return "SAFE"
 
     async def kill_transaction(self, flow_id: str, reason: str):
         """

@@ -1,13 +1,15 @@
-import datetime
-import uuid
-from typing import Dict, Any, List
+import hmac
+import hashlib
+import json
 
 class DecisionTracer:
     """
-    Generates explainable trace maps for AI decisions.
+    Generates explainable trace maps for AI decisions with Crypto Signing.
     """
     def __init__(self):
         self._traces: List[Dict] = []
+        # In Prod: This generic key comes from Key Vault
+        self.secret_key = b"enterprise-audit-key-v1"
 
     def log_decision(self, agent_id: str, model: str, inputs: Dict, outputs: Dict, reasoning: str):
         trace_id = str(uuid.uuid4())
@@ -18,7 +20,9 @@ class DecisionTracer:
             "agent_id": agent_id,
             "model_usage": {
                 "name": model,
-                "provider": "Azure OpenAI (Private)"
+                "provider": "Azure OpenAI (Private)",
+                "token_cost": 0.002, # $0.002 per 1k input
+                "latency_ms": 125, # Mock
             },
             "inputs": inputs,
             "decision_output": outputs,
@@ -28,8 +32,14 @@ class DecisionTracer:
             }
         }
         
+        # Cryptographic Signature (HMAC-SHA256)
+        # Ensures log integrity (Non-Repudiation)
+        payload = json.dumps(trace_entry, sort_keys=True).encode()
+        signature = hmac.new(self.secret_key, payload, hashlib.sha256).hexdigest()
+        trace_entry["audit_signature"] = signature
+        
         self._traces.append(trace_entry)
-        print(f"[Trace {trace_id}] Decision Logged for {agent_id}")
+        print(f"[Trace {trace_id}] Logged & Signed (Sig: {signature[:8]}...)")
         return trace_id
 
     def get_traces(self) -> List[Dict]:
