@@ -14,61 +14,10 @@ HEADERS = {
     "Content-Type": "application/json"
 }
 
+from app.managers.notification_manager import manager
+
 class BuyerAgentService:
-    @staticmethod
-    async def initiate_negotiation(
-        user_id: str, 
-        product_id: str, 
-        start_price: float, 
-        max_budget: float, 
-        initial_message: str
-    ) -> Dict[str, Any]:
-        """
-        Starts a negotiation session with the Vendor Agent.
-        Executes autonomous decision logic based on max_budget.
-        """
-        negotiation_id = str(uuid.uuid4())
-        
-        # 1. Log Initial Intent (Internal)
-        await BuyerAgentService._log_chat(negotiation_id, "BUYER_AGENT", f"Intent: Buy {product_id}. Start: ${start_price}. Max: ${max_budget} (SECRET)")
-
-        # 2. Handshake with Vendor
-        # Constraint: Do NOT send max_budget
-        payload = {
-            "negotiation_id": negotiation_id,
-            "product_id": product_id,
-            "offer_price": start_price,
-            "message": initial_message
-        }
-        
-        try:
-            async with httpx.AsyncClient() as client:
-                # Log Outgoing Message
-                await BuyerAgentService._log_chat(negotiation_id, "BUYER", f"Offer: ${start_price}. Msg: {initial_message}")
-                
-                response = await client.post(f"{VENDOR_API_URL}/negotiate", json=payload, timeout=10.0)
-                response.raise_for_status()
-                vendor_reply = response.json()
-                
-                # Log Vendor Response
-                await BuyerAgentService._log_chat(
-                    negotiation_id, 
-                    "VENDOR", 
-                    f"Status: {vendor_reply.get('status')}. Price: ${vendor_reply.get('price')}. Msg: {vendor_reply.get('message')}"
-                )
-
-                return await BuyerAgentService._evaluate_response(
-                    negotiation_id, 
-                    vendor_reply, 
-                    max_budget, 
-                    product_id,
-                    user_id
-                )
-
-        except Exception as e:
-            error_msg = f"Negotiation failed: {str(e)}"
-            await BuyerAgentService._log_chat(negotiation_id, "SYSTEM", error_msg)
-            return {"status": "ERROR", "message": error_msg}
+    # ... (other methods)
 
     @staticmethod
     async def _evaluate_response(
@@ -90,10 +39,6 @@ class BuyerAgentService:
         if status == "ACCEPTED":
              await BuyerAgentService._execute_order(negotiation_id, user_id, product_id, counter_price)
              return {"status": "DEAL_MAKER", "final_price": counter_price}
-
-from app.managers.notification_manager import manager
-
-# ... existing code ...
 
         elif status == "COUNTERED":
             # AUTONOMOUS DECISION

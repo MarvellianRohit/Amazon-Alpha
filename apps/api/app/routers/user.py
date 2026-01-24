@@ -8,8 +8,10 @@ router = APIRouter()
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
 
+from typing import Optional
+
 class UpdateUserRequest(BaseModel):
-    wallet_address: str | None = None
+    wallet_address: Optional[str] = None
 
 # Mock database for local development when Supabase is not configured
 MOCK_USER_DB = {}

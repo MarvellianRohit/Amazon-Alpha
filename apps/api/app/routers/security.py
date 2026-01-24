@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from app.services.red_team.py import red_team_service
+from app.services.red_team import red_team_service
 
 router = APIRouter()
 

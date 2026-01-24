@@ -1,7 +1,7 @@
 import uuid
 import time
 import random
-from typing import List, Dict
+from typing import List, Dict, Any
 
 from app.services.triton_ensemble import triton_ensemble
 

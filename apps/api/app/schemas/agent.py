@@ -3,7 +3,7 @@ from typing import List, Optional, Literal, Dict
 from datetime import datetime
 
 class AgentIntent(BaseModel):
-    raw_query: string
+    raw_query: str
     user_id: str
     priority: Literal["low", "medium", "high"] = "medium"
 
@@ -23,8 +23,14 @@ class NegotiationRound(BaseModel):
     terms: Optional[str] = None
     accepted: bool = False
 
-
 class DealApproval(BaseModel):
     deal_id: str
     user_id: str
+
+class ReplenishmentItem(BaseModel):
+    product_id: str
+    quantity: int
+    predicted_date: datetime
+    confidence_score: float
+
 
