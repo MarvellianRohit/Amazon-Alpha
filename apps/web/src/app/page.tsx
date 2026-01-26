@@ -12,6 +12,7 @@ import { SpotlightCard } from "@/components/ui/spotlight-card"
 import HeroCarousel from "@/components/home/hero-carousel"
 import { motion } from "framer-motion"
 import { StaggerList } from "@/components/ui/stagger-list"
+import { SupernovaPortal } from "@/components/supernova/SupernovaPortal"
 
 export default function Home() {
   return (
@@ -27,8 +28,11 @@ export default function Home() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="space-y-6 pb-8 pt-6 md:pb-12 md:pt-10 lg:py-12"
+          className="space-y-6 pb-8 pt-6 md:pb-12 md:pt-10 lg:py-12 relative"
         >
+          <div className="container mx-auto px-4 flex justify-end mb-4">
+            <SupernovaPortal productName="Featured Item" className="w-full max-w-xs z-20" />
+          </div>
           <HeroCarousel />
         </motion.section>
 

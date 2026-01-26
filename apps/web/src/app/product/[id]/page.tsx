@@ -7,13 +7,22 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Star, Truck, ShieldCheck, Heart, Share2, ArrowLeft } from "lucide-react"
+import { Star, Truck, ShieldCheck, Heart, Share2, ArrowLeft, DollarSign } from "lucide-react"
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog"
+import { NegotiationChat } from "@/components/ai/negotiation-chat"
 import { PRODUCTS } from "@/lib/mock-data"
 import { Price } from "@/components/ui/price"
 import { ProductGallery } from "@/components/product/product-gallery"
 import { Navbar } from "@/components/layout/navbar"
 import { useCart } from "@/hooks/use-cart"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion } from "framer-motion"
 
 export default function ProductPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = use(params)
@@ -105,6 +114,27 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
                                     >
                                         Add to Cart
                                     </Button>
+
+                                    <Dialog>
+                                        <DialogTrigger asChild>
+                                            <Button
+                                                size="lg"
+                                                className="w-full h-14 text-lg font-bold bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white shadow-lg shadow-indigo-500/20 border-0"
+                                            >
+                                                <DollarSign className="w-5 h-5 mr-2" />
+                                                Make an Offer
+                                            </Button>
+                                        </DialogTrigger>
+                                        <DialogContent className="sm:max-w-[500px]">
+                                            <DialogHeader>
+                                                <DialogTitle>Negotiate Price</DialogTitle>
+                                                <DialogDescription>
+                                                    Chat with our AI agent to negotiate a better deal for this item.
+                                                </DialogDescription>
+                                            </DialogHeader>
+                                            <NegotiationChat productId={product.id} initialPrice={product.price} />
+                                        </DialogContent>
+                                    </Dialog>
                                     <Button
                                         size="lg"
                                         variant="outline"

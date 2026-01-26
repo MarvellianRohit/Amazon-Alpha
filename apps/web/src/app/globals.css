@@ -118,10 +118,34 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  html {
+    /* Note: scroll-behavior: smooth is handled by Lenis, so we might not strictly need it, 
+        and sometimes it conflicts. Lenis usually recommends disabling it or leaving it auto. 
+        But for anchor links without lenis intercept, it helps. */
+    scroll-behavior: auto;
   }
 
   body {
     @apply bg-background text-foreground;
+    overscroll-behavior: none;
+    /* Prevents bounce on Mac */
+  }
+
+  /* Premium Selection Style */
+  ::selection {
+    @apply bg-primary/20 text-primary;
+  }
+
+  /* Performance Utility Classes */
+  .gpu-accelerated {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000px;
   }
 }
 
