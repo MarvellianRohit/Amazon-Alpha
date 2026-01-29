@@ -29,6 +29,9 @@ export default function AdminPage() {
                         <Link href="/admin/dashboard">
                             <Button className="w-full" variant="outline">Dashboard</Button>
                         </Link>
+                        <Link href="/admin/vendors">
+                            <Button className="w-full" variant="outline">Manage Vendors</Button>
+                        </Link>
                         <Link href="/">
                             <Button className="w-full" variant="ghost">Return Home</Button>
                         </Link>

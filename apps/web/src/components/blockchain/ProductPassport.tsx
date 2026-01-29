@@ -5,7 +5,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ShieldCheck, MapPin, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
-import Map, { Marker, Source, Layer, LineLayer } from 'react-map-gl';
+import Map, { Marker, Source, Layer } from 'react-map-gl/mapbox';
+import type { LineLayer } from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
 // Mock Data Structure
@@ -25,6 +26,7 @@ interface PassportData {
 const lineLayer: LineLayer = {
     id: 'route',
     type: 'line',
+    source: 'route-source',
     paint: {
         'line-color': '#9333ea', // purple-600
         'line-width': 2,

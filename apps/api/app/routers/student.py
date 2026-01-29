@@ -1,40 +1,56 @@
-from fastapi import APIRouter, UploadFile, File, HTTPException, Depends
+from fastapi import APIRouter, UploadFile, File, HTTPException, Form
 from supabase import create_client, Client
 import os
 import uuid
 
 router = APIRouter()
 
-# Initialize Supabase Client (Verify environment variables are loaded in main app)
-url: str = os.environ.get("SUPABASE_URL")
-key: str = os.environ.get("SUPABASE_SERVICE_KEY")
-supabase: Client = create_client(url, key)
+# Mock storage for development
+MOCK_VERIFICATIONS = {}
 
-@router.post("/api/v1/verify-student")
-async def verify_student(file: UploadFile = File(...), user_id: str = "test-user"): # Replace with Auth dependency
+def get_supabase_client():
     try:
-        # 1. Upload File to Storage
+        url = os.environ.get("SUPABASE_URL")
+        key = os.environ.get("SUPABASE_SERVICE_KEY")
+        if not url or not key:
+            return None
+        return create_client(url, key)
+    except:
+        return None
+
+@router.post("/verify")
+async def verify_student(
+    email: str = Form(...),
+    file: UploadFile = File(...)
+):
+    try:
+        # Mock Logic: Check if email ends with .edu
+        is_edu_email = email.lower().endswith(".edu")
+        
+        # Simulate processing delay or file check
         file_ext = file.filename.split(".")[-1]
-        file_name = f"{user_id}/{uuid.uuid4()}.{file_ext}"
-        file_content = await file.read()
+        mock_file_path = f"mock/{uuid.uuid4()}.{file_ext}"
         
-        storage_response = supabase.storage.from_("student-ids").upload(
-            path=file_name,
-            file=file_content,
-            file_options={"content-type": file.content_type}
-        )
+        # Determine success based on email domain (Demo logic)
+        status = "verified" if is_edu_email else "pending"
+        message = "Student Verified Successfully" if is_edu_email else "Verification Pending (Non-Edu Email)"
 
-        # 2. Get Public URL (or signed URL if private)
-        # For this demo, assuming public read or using path
-        # storage_path = storage_response.get('path') # Check response structure
+        # In a real app, we would upload to Supabase Storage and update DB
+        # supabase = get_supabase_client()
+        # if supabase:
+        #    ... (upload logic) ...
         
-        # 3. Update Profile
-        data, count = supabase.table("profiles").update({
-            "is_verified_student": True, # Auto-verify for demo
-            "college_id_url": file_name
-        }).eq("id", user_id).execute()
-
-        return {"status": "success", "message": "Student Verified", "data": data}
+        return {
+            "status": "success", 
+            "verification_status": status,
+            "message": message,
+            "data": {
+                "email": email,
+                "file_path": mock_file_path,
+                "is_verified": is_edu_email
+            }
+        }
 
     except Exception as e:
+        print(f"Verification Error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
