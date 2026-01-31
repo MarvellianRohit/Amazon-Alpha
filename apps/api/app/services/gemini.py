@@ -3,7 +3,7 @@ import os
 from typing import List, Dict, Any
 
 # Configure Gemini
-api_key = os.environ.get("GEMINI_API_KEY")
+api_key = os.environ.get("GOOGLE_API_KEY")
 if api_key:
     genai.configure(api_key=api_key)
 
@@ -25,15 +25,67 @@ class GeminiService:
             return [0.0] * 768
 
     @staticmethod
-    async def generate_chat_response(query: str, context: str) -> str:
+    async def analyze_image(image_bytes: bytes, mime_type: str) -> Dict[str, str]:
         if not api_key:
-            return "I am running in Offline Mode. Please configure GEMINI_API_KEY."
+            return {"query": "red running shoes", "description": "Offline Mode: Simulated Image Analysis"}
         
         try:
+            model = genai.GenerativeModel('gemini-1.5-flash')
+            
+            image_part = {
+                "mime_type": mime_type,
+                "data": image_bytes
+            }
+            
+            prompt = """
+            Analyze this image for an e-commerce platform.
+            1. Describe the main product shown.
+            2. Extract key attributes: Category, Color, Style, Material.
+            3. Formulate a search query to find this exact or similar product.
+            
+            Output strictly in JSON format:
+            {
+                "description": "Short visual description...",
+                "search_query": "Key search terms..."
+            }
+            """
+            
+            response = await model.generate_content_async([prompt, image_part])
+            
+            # Clean up response to ensure valid JSON
+            text = response.text.replace("```json", "").replace("```", "").strip()
+            import json
+            return json.loads(text)
+        except Exception as e:
+            print(f"Gemini Vision Error: {e}")
+            return {"query": "error", "description": "Could not analyze image."}
+
+
+    @staticmethod
+    async def generate_chat_response(query: str, context: str) -> str:
+        if not api_key:
+            # Simulated "Smart" AI Response for Demo/Offline Mode
+            query_lower = query.lower()
+            if "hello" in query_lower or "hi" in query_lower or "who are you" in query_lower:
+                return "Hello! I am Jarvis, your AI shopping assistant. How can I help you today?"
+            elif "search" in query_lower or "find" in query_lower:
+                return f"I can certainly help you find '{query.replace('search for', '').replace('find', '').strip()}'. Checking our inventory now..."
+            elif "order" in query_lower:
+                return "I can help you track your recent orders. Please go to the 'My Orders' section for real-time updates."
+            elif "recommend" in query_lower:
+                return "Based on popular trends, I recommend checking out our new 'Holodeck' section for immersive shopping."
+            else:
+                return "That's an interesting question. While I'm currently in 'Offline Demo Mode', I can still help you navigate the store. Try asking me to search for products or check your cart."
+        
+        try:
+            # deterministic guardrail for identity
+            if "who are you" in query.lower() or "your name" in query.lower():
+                return "I am Jarvis, your AI shopping assistant."
+
             model = genai.GenerativeModel('gemini-pro')
             
             prompt = f"""
-            You are the "God Mode" AI Assistant for Amazon-Alpha, an advanced e-commerce platform.
+            You are "Jarvis", the advanced AI shopping assistant for Amazon-Alpha.
             You have access to the system's documentation and live data.
             
             CONTEXT FROM KNOWLEDGE BASE:
@@ -43,9 +95,9 @@ class GeminiService:
             {query}
             
             INSTRUCTIONS:
-            - Answer the user's question accurately based ONLY on the provided context.
-            - If the context doesn't contain the answer, use your general knowledge but mention you are unsure about specific implementation details.
-            - Be helpful, technical (if asked), and concise.
+            - You are Jarvis. If asked who you are, ALWAYS answer "I am Jarvis, your AI shopping assistant."
+            - For product questions, answer based on the provided context.
+            - If the answer is not in the context, you can use your general knowledge to be helpful.
             - Format your response in Markdown.
             """
             
@@ -58,7 +110,7 @@ class GeminiService:
     @staticmethod
     async def generate_consultant_response(query: str, data_context: Dict[str, Any]) -> str:
         if not api_key:
-            return "AI Consultant Offline. Configure GEMINI_API_KEY."
+            return "AI Consultant Offline. Configure GOOGLE_API_KEY."
         
         try:
             model = genai.GenerativeModel('gemini-1.5-pro') # Using 1.5 Pro as requested

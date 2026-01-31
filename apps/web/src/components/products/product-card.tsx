@@ -5,8 +5,9 @@ import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Price } from "@/components/ui/price"
 import { motion, AnimatePresence } from "framer-motion"
-import { Heart } from "lucide-react"
+import { Heart, Eye } from "lucide-react"
 import { useState } from "react"
+import { ProductQuickLook } from "@/components/products/product-quick-look"
 
 function WishlistHeart() {
     const [liked, setLiked] = useState(false);
@@ -25,7 +26,7 @@ function WishlistHeart() {
     return (
         <button
             onClick={handleLike}
-            className="p-2 rounded-full bg-white/80 backdrop-blur-sm hover:bg-white shadow-sm transition-all relative"
+            className="p-2 rounded-full bg-white/80 backdrop-blur-sm hover:bg-white shadow-sm transition-all relative z-30"
         >
             <motion.div
                 animate={liked ? { scale: [1, 1.4, 1] } : { scale: 1 }}
@@ -101,6 +102,18 @@ export default function ProductCard({ id, title, price, image, category }: Produ
         setGlare(prev => ({ ...prev, opacity: 0 }));
     };
 
+    // Construct a mock product object for QuickLook
+    // In a real app, ProductCard would likely receive the full object
+    const quickLookProduct: any = {
+        id,
+        name: title,
+        price: price,
+        imageUrl: image,
+        description: `Experience the premium quality of ${title}. Perfect for your daily needs in the ${category} category.`, // Generated description
+        stock: 12, // Mock stock
+        category: category
+    };
+
     return (
         <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -145,18 +158,29 @@ export default function ProductCard({ id, title, price, image, category }: Produ
                     />
 
                     <CardHeader className="p-0">
-                        <div className="aspect-square bg-gray-100 dark:bg-slate-800 relative rounded-t-lg overflow-hidden flex items-center justify-center group">
-                            {/* Placeholder for real image */}
-                            <motion.span
-                                whileHover={{ scale: 1.05 }}
-                                transition={{ duration: 0.4 }}
-                                className="text-gray-400 dark:text-gray-600 group-hover:text-indigo-500 transition-colors"
-                            >
-                                Product Image
-                            </motion.span>
+                        <div className="aspect-square bg-gray-100 dark:bg-slate-800 relative rounded-t-lg overflow-hidden flex items-center justify-center group/image">
+
+                            {/* Quick Look Wrapper around Image */}
+                            <ProductQuickLook product={quickLookProduct}>
+                                <div className="w-full h-full flex items-center justify-center cursor-help">
+                                    {/* Placeholder for real image */}
+                                    <motion.span
+                                        whileHover={{ scale: 1.05 }}
+                                        transition={{ duration: 0.4 }}
+                                        className="text-gray-400 dark:text-gray-600 group-hover/image:text-indigo-500 transition-colors"
+                                    >
+                                        Product Image
+                                    </motion.span>
+
+                                    {/* Mobile/Tablet Hint */}
+                                    <div className="absolute bottom-2 left-1/2 -translate-x-1/2 px-2 py-1 bg-black/50 text-white text-[10px] rounded-full opacity-0 group-hover/image:opacity-100 transition-opacity pointer-events-none">
+                                        Quick Look
+                                    </div>
+                                </div>
+                            </ProductQuickLook>
 
                             {/* Heart Explosion Button */}
-                            <div className="absolute top-2 right-2 z-10">
+                            <div className="absolute top-2 right-2 z-30">
                                 <WishlistHeart />
                             </div>
                         </div>
@@ -169,7 +193,7 @@ export default function ProductCard({ id, title, price, image, category }: Produ
                         </div>
                     </CardContent>
                     <CardFooter className="p-4 pt-0">
-                        <Button asChild className="w-full bg-slate-900 dark:bg-white dark:text-slate-900 hover:bg-indigo-600 dark:hover:bg-indigo-100 transition-all">
+                        <Button asChild className="w-full bg-slate-900 dark:bg-white dark:text-slate-900 hover:bg-indigo-600 dark:hover:bg-indigo-100 transition-all z-30 relative">
                             <Link href={`/products/${id}`}>View Details</Link>
                         </Button>
                     </CardFooter>
